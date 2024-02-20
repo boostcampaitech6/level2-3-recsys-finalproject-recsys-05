@@ -1,5 +1,37 @@
 # Data
 
+## File Upload Guide
+
+`.env` 파일 생성
+
+```bash
+cp .env.example .env
+```
+
+`.env` 파일 수정
+
+```bash
+GOOGLE_DRIVE_CREDENTIAL_FILE_PATH=your_google_drive_credential_file_path
+```
+
+예시
+
+```python
+from data.utils.file_upload import new_google_drive_client
+from data.config import settings
+
+
+client = new_google_drive_client(
+    settings.google_drive_credential_file_path,
+    settings.google_drive_base_folder_id,
+)
+
+file_id = client.upload_file(
+    file_path="silver.json",
+    save_path="2024/02/19",
+)
+```
+
 ## Convert JSON to Avro Guide
 
 패키지 설치

@@ -1,7 +1,7 @@
 import os
 from fastavro import writer, parse_schema
 import orjson as json
-import data.utils.schema as schema_book
+import data.schema.schema as schema_book
 import inquirer
 from loguru import logger
 
