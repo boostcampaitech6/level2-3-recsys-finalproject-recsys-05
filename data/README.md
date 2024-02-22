@@ -1,5 +1,40 @@
 # Data
 
+## User Summary Data Crwal Guide
+
+패키지 설치
+
+```bash
+$ pip install aiohttp inquirer loguru tqdm orjson ijson
+```
+
+크롤링 실행
+
+```bash
+####### 스크립트 실행 #######
+$ make start_user_crawler
+
+#######  실행 결과   #######
+[?] 디렉토리를 선택해주세요: .
+[?] 변환할 파일을 선택해주세요: 
+   [X] gold.json
+   [ ] emerald.json
+   [X] silver.json
+   [ ] platinum.json
+   [X] iron.json
+   [ ] diamond.json
+ > [X] bronze.json
+
+[?] 저장할 디렉토리의 경로를 입력해주세요: ./summoner_info
+[?] 마지막으로 크롤링한 소환사 ID를 입력해주세요: <소환사 아이디> # 공백일 경우 처음부터
+```
+
+로그 실시간으로 보는 방법
+```bash
+$ # 마지막 20줄 보기
+$ watch -n 1 tail -n 20 user_summary.log
+```
+
 ## File Upload Guide
 
 패키지 설치
