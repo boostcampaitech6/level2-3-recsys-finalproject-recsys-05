@@ -7,6 +7,7 @@ from loguru import logger
 
 logger.add("avro_converter.log", format="{time} {level} {message}", level="INFO")
 
+
 def get_file_size(file_path):
     return os.path.getsize(file_path)
 
@@ -40,23 +41,31 @@ class ARVOConverter:
     def start(self):
         data = []
         before_size = 0
-        
+
         for file in self.input_files:
             logger.info(f"Parsing {file}")
             data.extend(self._parse_json(file))
             before_size += get_file_size(file)
-            
+
         logger.info(f"변환 전 파일 크기: {before_size} 바이트")
 
         parsed_schema = parse_schema(self.schema)
 
         with open(self.output_file_name, "wb") as out:
             logger.info(f"Writing to {self.output_file_name}")
-            writer(out, parsed_schema, data, validator=True, strict=True, strict_allow_default=True, disable_tuple_notation=True)
-            
+            writer(
+                out,
+                parsed_schema,
+                data,
+                validator=True,
+                strict=True,
+                strict_allow_default=True,
+                disable_tuple_notation=True,
+            )
+
         after_size = get_file_size(self.output_file_name)
         logger.info(f"변환 후 파일 크기: {after_size} 바이트")
-        
+
         logger.info(f"변환률: {after_size / before_size * 100:.2f}%")
 
         logger.info("Conversion complete")
