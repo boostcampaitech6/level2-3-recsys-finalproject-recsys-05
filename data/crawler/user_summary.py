@@ -30,7 +30,6 @@ def user_generator(file_path: str) -> Generator[str, None, None]:
 
 def save_jsonl(dir_name: str, file_name: str, data: dict):
     full_path = os.path.join(dir_name, f"{file_name}l")
-
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     with open(full_path, "a", encoding="utf-8") as jsonl_file:
@@ -90,7 +89,7 @@ class UserCrawler:
 
                 logger.info(f"Group: {summoner_file_path}, Summoner ID: {summoner_id}")
                 response = await self._get(get_uri("KR", summoner_id))
-                if response is not None:
+                if response is None:
                     continue
 
                 save_jsonl(self.output_dir, summoner_file_path, response["data"])
