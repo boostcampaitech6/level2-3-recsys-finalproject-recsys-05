@@ -2,6 +2,13 @@
 
 ## File Upload Guide
 
+패키지 설치
+
+```bash
+$ pip install google-auth google-auth-oauthlib google-auth-httplib2
+$ pip install python-dotenv
+```
+
 `.env` 파일 생성
 
 ```bash

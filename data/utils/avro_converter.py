@@ -7,6 +7,9 @@ from loguru import logger
 
 logger.add("avro_converter.log", format="{time} {level} {message}", level="INFO")
 
+def get_file_size(file_path):
+    return os.path.getsize(file_path)
+
 
 class ARVOConverter:
     def __init__(
@@ -36,15 +39,25 @@ class ARVOConverter:
 
     def start(self):
         data = []
+        before_size = 0
+        
         for file in self.input_files:
             logger.info(f"Parsing {file}")
             data.extend(self._parse_json(file))
+            before_size += get_file_size(file)
+            
+        logger.info(f"변환 전 파일 크기: {before_size} 바이트")
 
         parsed_schema = parse_schema(self.schema)
 
         with open(self.output_file_name, "wb") as out:
             logger.info(f"Writing to {self.output_file_name}")
-            writer(out, parsed_schema, data)
+            writer(out, parsed_schema, data, validator=True, strict=True, strict_allow_default=True, disable_tuple_notation=True)
+            
+        after_size = get_file_size(self.output_file_name)
+        logger.info(f"변환 후 파일 크기: {after_size} 바이트")
+        
+        logger.info(f"변환률: {after_size / before_size * 100:.2f}%")
 
         logger.info("Conversion complete")
 
@@ -79,7 +92,7 @@ if __name__ == "__main__":
         inquirer.List(
             "schema",
             message="Schema를 선택해주세요",
-            choices=["USER_LIST"],
+            choices=["USER_LIST", "USER_MATCH_LIST"],
         ),
         inquirer.Text(
             "output_file_name",
@@ -88,8 +101,6 @@ if __name__ == "__main__":
         ),
     ]
     answers = inquirer.prompt(questions)
-
-    print(answers["output_file_name"])
 
     avro_converter = ARVOConverter(
         answers["schema"],
