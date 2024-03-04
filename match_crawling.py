@@ -4,6 +4,7 @@ import os
 import requests
 import time
 import argparse
+from tqdm import tqdm
 
 
 def parse_args():
@@ -36,14 +37,39 @@ def write_json(data, output_dir):
             file.write(orjson.dumps(match))
             
 
-def summoner_id_generator(summoner_id_path, output_dir):
+def summoner_id_generator(summoner_id_path, tier, output_dir):
     num_of_file = len(os.listdir(output_dir))
 
-    with open(summoner_id_path) as json_file:
+    with open(os.path.join(summoner_id_path, tier + '.json')) as json_file:
         json_data = json.load(json_file)
         for i in json_data[num_of_file:]:
             summoner_id = i['summoner_id']
             yield summoner_id
+
+
+def left_summoner_id_generator(summoner_id_path, tier, target_dir):
+    import pandas as pd
+
+    original = pd.read_json(os.path.join(summoner_id_path, tier + '.json'))
+    original = original['summoner_id'].sort_values()
+    file = pd.Series(os.listdir(target_dir)).sort_values().apply(lambda x: x[:-5])
+
+    bmax = len(file)
+    need = []
+    j = 0
+    for i in range(len(original)):
+        if original.iloc[i] == file.iloc[j]:
+            j += 1
+            if j == bmax:
+                break
+
+        else:
+            need.append(original.iloc[i])
+
+    print(f'left ids : {len(need)}')
+
+    for i in tqdm(need):
+        yield i
 
 
 def crawling_match_generator(headers, summoner_id_generator):
@@ -85,7 +111,9 @@ if __name__ == "__main__":
     target_dir = os.path.join(argu.output_dir, argu.tier)
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-        
-    summoner_id_gen = summoner_id_generator(os.path.join(argu.summoner_id_path, argu.tier + '.json'), target_dir)
+        summoner_id_gen = summoner_id_generator(argu.summoner_id_path, argu.tier, target_dir)
+    else:
+        summoner_id_gen = left_summoner_id_generator(argu.summoner_id_path, argu.tier, target_dir)
+    
     match_gen = crawling_match_generator(headers, summoner_id_gen)
     write_json(match_gen, target_dir)
