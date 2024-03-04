@@ -14,7 +14,6 @@ def parse_args():
     parser.add_argument("--summoner_id_path", type=str, help="", default="../boostcamp_notebooks/summorer_ids")
     parser.add_argument("--output_dir", type=str, help="", default="/home/piddle/hdd/matches")
     
-
     args = parser.parse_args()
 
     return args
@@ -51,7 +50,7 @@ def left_summoner_id_generator(summoner_id_path, tier, target_dir):
     import pandas as pd
 
     original = pd.read_json(os.path.join(summoner_id_path, tier + '.json'))
-    original = original['summoner_id'].sort_values()
+    original = original['summoner_id'].sort_values().drop_duplicates()
     file = pd.Series(os.listdir(target_dir)).sort_values().apply(lambda x: x[:-5])
 
     bmax = len(file)
