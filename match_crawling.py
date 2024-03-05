@@ -7,6 +7,7 @@ import argparse
 from tqdm import tqdm
 
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -90,13 +91,13 @@ def crawling_match_generator(headers, summoner_id_generator):
                 sleep_time += 1
 
                 now = time.strftime('%Y.%m.%d - %H:%M:%S')
-                print(f'{now} : sleep {sleep_time}')      
+                tqdm.write(f'{now} : sleep {sleep_time}')      
                 resp = requests.get(url, headers=headers)
             now = time.strftime('%Y.%m.%d - %H:%M:%S')
-            print(f'{now}: sleep done')      
+            tqdm.write(f'{now}: sleep done')      
         
         else:
-            print(f"unexpected response : {resp.status_code}, summoncer_id : {summoner_id}")
+            tqdm.write(f"unexpected response : {resp.status_code}, summoncer_id : {summoner_id}")
             user_json = orjson.loads('[{"resp.status_code": ' + f'{resp.status_code}' + ' }]')
             yield summoner_id, user_json
 
