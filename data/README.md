@@ -1,12 +1,47 @@
 # Data
 
+## User Summary Data Crwal Guide
+
+패키지 설치
+
+```bash
+pip install aiohttp inquirer loguru tqdm orjson ijson
+```
+
+크롤링 실행
+
+```bash
+####### 스크립트 실행 #######
+$ make start_user_crawler
+
+#######  실행 결과   #######
+[?] 디렉토리를 선택해주세요: .
+[?] 변환할 파일을 선택해주세요: 
+   [X] gold.json
+   [ ] emerald.json
+   [X] silver.json
+   [ ] platinum.json
+   [X] iron.json
+   [ ] diamond.json
+ > [X] bronze.json
+
+[?] 저장할 디렉토리의 경로를 입력해주세요: ./summoner_info
+[?] 마지막으로 크롤링한 소환사 ID를 입력해주세요: <소환사 아이디> # 공백일 경우 처음부터
+```
+
+로그 실시간으로 보는 방법
+```bash
+# 마지막 20줄 보기
+watch -n 1 tail -n 20 user_summary.log
+```
+
 ## File Upload Guide
 
 패키지 설치
 
 ```bash
-$ pip install google-auth google-auth-oauthlib google-auth-httplib2
-$ pip install python-dotenv
+pip install google-auth google-auth-oauthlib google-auth-httplib2
+pip install python-dotenv
 ```
 
 `.env` 파일 생성
@@ -44,14 +79,14 @@ file_id = client.upload_file(
 패키지 설치
 
 ```bash
-$ pip install fastavro orjson loguru inquirer
+pip install fastavro orjson loguru inquirer
 ```
 
 json 파일들을 avro 포맷으로 변환
 
 ```bash
 ####### 스크립트 실행 #######
-$ python -m data.utils.avro_converter
+python -m data.utils.avro_converter
 
 #######  실행 결과   #######
 [?] 변환할 파일의 경로를 입력해주세요: .
