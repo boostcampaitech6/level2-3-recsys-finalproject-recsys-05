@@ -1,0 +1,80 @@
+/* 기본 CSS 설정에 추가 */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 1rem 0;
+}
+
+.navbar h1 {
+    margin: 0;
+    padding: 0 15px;
+    font-size: 20px;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+}
+
+.main-content h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+button {
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: .25rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    background-color: #f8f9fa;
+    color: #333;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 20px;
+}
+
+.login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* 아이콘과 텍스트 사이의 간격 */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #EB0029; /* 버튼 배경색 */
+    color: white; /* 버튼 텍스트 색상 */
+    border: none;
+    border-radius: .25rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #fd4463; /* 호버 상태의 배경색 */
+}
+
+.login-icon {
+    width: 24px; /* 아이콘 크기 */
+    height: auto;
+    fill: white; /* 아이콘 색상 */
+}
+
+.user-icon {
+    width: 24px; /* 아이콘 크기 */
+    height: 24px;
+}
