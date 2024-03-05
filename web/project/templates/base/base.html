@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Duo Finder">
+  <meta name="author" content="Duo Finder">
+  <meta name="keywords"
+        content="Duo Finder, LOL, League of Legends, Duo, Finder, LOL Duo Finder">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta name="google" content="notranslate">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUO FINDER
+      {% block title %}
+      {% endblock title %}
+    </title>
+    <link rel="stylesheet" href="{{ static }}css/output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="flex flex-col min-h-screen">
+      <header>
+        <nav class="flex items-center justify-between flex-wrap bg-stone-500 p-6">
+          <div class="flex items-center flex-shrink-0 text-white mr-6"
+               onclick="home()">
+            <span class="font-semibold text-xl tracking-tight">DUO FINDER</span>
+          </div>
+          <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-stone-200 border-stone-400 hover:text-white hover:border-white">
+              <svg class="fill-current h-3 w-3"
+                   viewBox="0 0 20 20"
+                   xmlns="http://www.w3.org/2000/svg">
+                <title>Menu</title>
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+              </svg>
+            </button>
+          </div>
+          <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-sm lg:flex-grow">
+              <a href="{{ url('recommend-ai') }}"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">추천 AI</a>
+              <a href="#responsive-header"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">내 대시보드</a>
+              <a href="#responsive-header"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white">매칭 기록</a>
+            </div>
+            <div>
+              {% if user and user.is_authenticated %}
+                <span class="text-white mr-4 mt-4 lg:mt-0">안녕하세요, {{ user.username }}님!</span>
+                <button onclick="users_profile()"
+                        class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-stone-500 hover:bg-white mt-4 lg:mt-0">
+                  마이페이지
+                </button>
+                <form method="post" action="{{ url('auth:signout') }}" class="inline-block">
+                  {{ csrf_input }}
+                  <button type="submit"
+                          class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-stone-500 hover:bg-white mt-4 lg:mt-0">
+                    로그아웃
+                  </button>
+                </form>
+              {% else %}
+                <button onclick="signin()"
+                        class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-stone-500 hover:bg-white mt-4 lg:mt-0">
+                  로그인하기
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main class="flex-1">
+        {% block content %}
+        {% endblock content %}
+      </main>
+    </div>
+    <footer>
+      <div class="bg-stone-500">
+        <div class="max-w-2xl mx-auto text-white py-10">
+          <div class="mt-14 flex flex-col md:flex-row md:justify-between items-center text-sm text-stone-400">
+            <p class="order-2 md:order-1 mt-8 md:mt-0">© Duo Finder, 2024.</p>
+            <div class="order-1 md:order-2">
+              <span class="px-2">About us</span>
+              <span class="px-2 border-l">Contact us</span>
+              <span class="px-2 border-l">Privacy Policy</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="{{ static }}js/script.js"></script>
+    <script>
+    function users_profile() {
+        location.href = "{{ url('users:profile') }}";
+    }
+
+    function home() {
+        location.href = "{{ url('home') }}";
+    }
+
+    function signin() {
+        location.href = "{{ url('auth:signin') }}";
+    }
+
+    function signup() {
+        location.href = "{{ url('auth:signup') }}";
+    }
+
+    function signout() {
+        location.href = "{{ url('auth:signout') }}";
+    }
+    </script>
+    {% block js %}
+    {% endblock js %}
+  </body>
+</html>
