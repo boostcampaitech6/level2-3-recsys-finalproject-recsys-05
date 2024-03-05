@@ -1,17 +1,17 @@
-name: Python CI
+name: Web CI
 
 on:
   push:
     branches: [ "*" ]
-  pull_request:
-    branches: [ "*" ]
+    paths:
+      - 'web/project/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.11, 3.12]
+        python-version: [3.12]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +27,10 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Run Black
-      run: black --check .
-      
+      run: black --check web/project
+
     - name: Run Ruff
-      run: ruff check .
+      run: ruff check web/project
+
+    - name: Run Mypy
+      run: mypy .  
