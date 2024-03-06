@@ -68,40 +68,45 @@ def left_summoner_id_generator(summoner_id_path, tier, target_dir):
 
     print(f'left ids : {len(need)}')
 
-    for i in tqdm(need):
+    for i in tqdm(need, mininterval=2):
         yield i
 
 
 def crawling_match_generator(headers, summoner_id_generator):
     for summoner_id in summoner_id_generator:
-        # print(f"start: {summoner_id}")
         url = f"https://www.op.gg/api/v1.0/internal/bypass/games/kr/summoners/{summoner_id}?&limit=10&hl=ko_KR&game_type=soloranked"
-        resp = requests.get(url, headers=headers)
+        sleep_time = 1
+        
+        while True:
+            try:
+                resp = requests.get(url, headers=headers)
+            except ConnectionError as e:
+                now = time.strftime('%Y.%m.%d - %H:%M:%S')
+                tqdm.write(f"{now} : ConnectionError : {e}")
+                time.sleep(5)
+                continue
 
-        if resp.status_code == 200:
-            user_json = orjson.loads(resp.text)
-            user_json = data_cleaning(user_json)
-            yield summoner_id, user_json
+            if resp.status_code == 200:
+                user_json = orjson.loads(resp.text)
+                user_json = data_cleaning(user_json)
+                break
 
-        ### 응답코드가 429일 때, 대기 시간을 1초씩 늘려가며 다시 요청합니다.
-        elif resp.status_code == 429:
-            sleep_time = 1
-            while resp.status_code == 429:
+            ### 응답코드가 429일 때, 대기 시간을 1초씩 늘려가며 다시 요청합니다.
+            elif resp.status_code == 429 or resp.status_code // 100 == 5:
                 time.sleep(sleep_time)
-                sleep_time += 1
 
                 now = time.strftime('%Y.%m.%d - %H:%M:%S')
-                tqdm.write(f'{now} : sleep {sleep_time}')      
-                resp = requests.get(url, headers=headers)
-            now = time.strftime('%Y.%m.%d - %H:%M:%S')
-            tqdm.write(f'{now}: sleep done')      
-        
-        else:
-            tqdm.write(f"unexpected response : {resp.status_code}, summoncer_id : {summoner_id}")
-            user_json = orjson.loads('[{"resp.status_code": ' + f'{resp.status_code}' + ' }]')
-            yield summoner_id, user_json
+                tqdm.write(f'{now} : sleep {sleep_time}')   
+                sleep_time += 1
+                continue
 
-        
+            else:
+                tqdm.write(f"unexpected response : {resp.status_code}, summoncer_id : {summoner_id}")
+                user_json = orjson.loads('[{"resp.status_code": ' + f'{resp.status_code}' + ' }]')
+                break
+
+        yield summoner_id, user_json
+
 
 if __name__ == "__main__":
     argu = parse_args()
