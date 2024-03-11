@@ -1,0 +1,9 @@
+data_path : '/home/ksj0061/airflow-tutorial/match_info.jsonl'
+view_id : "match_info"
+query : "SELECT \
+          participants.champion_id, \
+          participants.position, \
+          participants.team_key, \
+          teams.game_stat.is_win \
+        FROM \
+          match_info"
