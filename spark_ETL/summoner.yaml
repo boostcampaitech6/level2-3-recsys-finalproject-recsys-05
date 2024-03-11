@@ -2,8 +2,10 @@ data_path : '/home/ksj0061/airflow-tutorial/summoner_info2_jun.jsonl'
 view_id : "summoner_info"
 query : "SELECT \
            summoner.summoner_id, \
-           summoner.most_champions.champion_stats.id, \
+           summoner.most_champions.champion_stats.id AS champ_id,  \
            summoner.most_champions.champion_stats.play \
          FROM \
            summoner_info"
 num_partitions: 1
+dataset_id: "summoner_dataset"
+table_id: "summoner_table"
