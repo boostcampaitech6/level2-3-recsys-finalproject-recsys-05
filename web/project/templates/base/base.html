@@ -103,11 +103,11 @@
     }
 
     function signin() {
-        location.href = "{{ url('auth:signin') }}";
+        location.href = "{{ url('auth:signin') }}?next={{ request.path }}";
     }
 
     function signup() {
-        location.href = "{{ url('auth:signup') }}";
+        location.href = "{{ url('auth:signup') }}?next={{ request.path }}";
     }
 
     function signout() {
