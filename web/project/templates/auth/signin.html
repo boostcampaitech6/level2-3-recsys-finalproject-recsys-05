@@ -9,7 +9,7 @@
       <h2 class="mt-10 text-center text-xl font-bold leading-9 tracking-tight text-gray-900">최고의 듀오를 추천드릴게요 🔥</h2>
     </div>
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="{{ url('auth:signin') }}" method="post">
+      <form class="space-y-6" action="{{ url('auth:signin') }}?next={{ next }}" method="post">
         {{ csrf_input }}
         <div>
           <label for="email" class="block text-sm font-medium leading-6 text-gray-900">아이디</label>
@@ -46,7 +46,7 @@
       </form>
       <p class="mt-10 text-center text-sm text-gray-500">
         회원이 아니신가요? 무료로 가입해보세요.
-        <a href="{{ url('auth:signup') }}"
+        <a href="{{ url('auth:signup') }}?next={{ next }}"
            class="font-semibold leading-6 text-stone-600 hover:text-stone-500">회원가입</a>
       </p>
     </div>

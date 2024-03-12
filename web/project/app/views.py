@@ -64,4 +64,4 @@ def get_account_by_summoner_name(request: WSGIRequest):
 
 
 def recommend_ai(request: WSGIRequest):
-    return render(request, "recommend/ai.html")
+    return render(request, "recommend/ai.html", {"user": request.user})

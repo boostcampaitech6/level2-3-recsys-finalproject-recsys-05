@@ -3,7 +3,23 @@
   | AI Recommend
 {% endblock title %}
 {% block content %}
-  <div class="flex justify-center items-center mt-64">
-    Hello
+  <div class="flex justify-center items-center mt-64 flex-col">
+    {% if not user.is_authenticated %}
+      <h1 class="text-4xl font-bold">안녕하세요, 방문자님</h1>
+      <p class="mt-8">
+          <a href="{{ url('auth:signin') }}" class="text-stone-500">로그인</a>을
+          하시면 AI 추천을 받아보실 수 있습니다.
+      </p>
+    {% elif not user.summoner_info %}
+      <h1 class="text-4xl font-bold">안녕하세요, {{ user.username }}님</h1>
+      <p class="mt-8">
+          라이엇 계정 연동을 통해 AI 추천을 받아보실 수 있습니다.
+      </p>  
+    {% else %}
+      <h1 class="text-4xl font-bold">안녕하세요, {{ user.username }}님</h1>
+      <button class="mt-8 bg-stone-500 hover:bg-stone-700 text-white py-2 px-4 rounded">    
+        AI 추천 시작하기
+      </button>
+    {% endif %}
   </div>
 {% endblock content %}

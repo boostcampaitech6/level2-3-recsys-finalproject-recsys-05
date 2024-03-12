@@ -1,11 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .forms import SigninForm, SignupForm
 
 
 def signin(request):
+    _next = request.GET.get("next")
+
     if request.user.is_authenticated:
-        return redirect("home")
+        if _next:
+            return redirect(_next)
+        else:
+            return redirect("home")
 
     if request.method == "POST":
         form = SigninForm(request.POST)
@@ -15,11 +20,14 @@ def signin(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("home")
+                if _next:
+                    return redirect(_next)
+                else:
+                    return redirect("home")
             else:
                 form.add_error(None, "Invalid username or password")
 
-    return render(request, "auth/signin.html")
+    return render(request, "auth/signin.html", {"next": _next})
 
 
 def signout(request):
@@ -29,13 +37,18 @@ def signout(request):
 
 
 def signup(request):
+    _next = request.GET.get("next")
+
     if request.user.is_authenticated:
-        return redirect("home")
+        if _next:
+            return redirect(_next)
+        else:
+            return redirect("home")
 
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("auth:signin")
+            return redirect(reverse("auth:signin") + f"?next={_next}")
 
-    return render(request, "auth/signup.html")
+    return render(request, "auth/signup.html", {"next": _next})
