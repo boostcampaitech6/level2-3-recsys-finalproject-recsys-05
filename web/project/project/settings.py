@@ -17,15 +17,27 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV = os.getenv("ENV", "development")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-oebj&y31_9&1-f^3cdx!h$_#jya*n8-&adi-t5%b(27p@e*t0s"
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENV == "production":
+    DEBUG = False
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_PRELOAD = True
+    SECRET_KEY = os.getenv("WEB_SECRET_KEY")
+else:
+    DEBUG = True
+    SECRET_KEY = "django-insecure-oebj&y31_9&1-f^3cdx!h$_#jya*n8-&adi-t5%b(27p@e*t0s"
 
 ALLOWED_HOSTS = ["duofinder.kr", "localhost", "127.0.0.1"]
 
@@ -85,8 +97,6 @@ WSGI_APPLICATION = "project.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-ENV = os.getenv("ENV", "development")
 
 DATABASES = {
     "default": {
