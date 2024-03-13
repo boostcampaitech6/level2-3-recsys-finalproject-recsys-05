@@ -6,7 +6,6 @@ import itertools
 from sklearn.preprocessing import MinMaxScaler
 
 
-
 class SimilarityDataset(Dataset):
     def __init__(self, cfg, summoner_df, match_df):
         self.cate_col = cfg['cate_col']
@@ -16,8 +15,6 @@ class SimilarityDataset(Dataset):
         
         self.summoner_df, self.summoner_compression_table = self.prepare_summoner(summoner_df)
         self.match_df, self.len, self.combinations, self.match_compression_table = self.prepare_match(match_df)
-
-        self.correction_summoner_idx = self.summoner_df['summoner_id'].min()
 
 
     def prepare_summoner(self, df):
@@ -76,7 +73,7 @@ class SimilarityDataset(Dataset):
         match_start, match_end = self.match_compression_table[idx]
         match_df = self.match_df.iloc[match_start: match_end]
 
-        summoner_compression_idx = match_df['summoner_id'].values - self.correction_summoner_idx
+        summoner_compression_idx = match_df['summoner_id'].values - 1
         summoner_idx = self.summoner_compression_table[summoner_compression_idx]
 
         summoner_table_cate = []
