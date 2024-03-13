@@ -1,11 +1,30 @@
-data_path : '/home/ksj0061/airflow-tutorial/summoner_info2_jun.jsonl'
+data_path : '/home/ksj0061/airflow-tutorial/gdrive/data/summoner_info2_jun.jsonl'
 view_id : "summoner_info"
 query : "SELECT \
-           summoner.summoner_id, \
-           summoner.most_champions.champion_stats.id AS champ_id,  \
-           summoner.most_champions.champion_stats.play \
+           summoner.summoner_id AS summoner_id, \
+           summoner.game_name AS game_name, \
+           summoner.tagline AS tagline, \
+           summoner.league_stats.tier_info.tier[0] AS tier, \
+           summoner.league_stats.tier_info.division[0] AS division, \
+           summoner.most_champions.champion_stats.id AS champ_id, \
+           summoner.most_champions.champion_stats.play AS champ_play, \
+           summoner.most_champions.champion_stats.win AS champ_win, \
+           summoner.most_champions.champion_stats.lose AS champ_lose, \
+           summoner.most_champions.champion_stats.kill AS champ_kill, \
+           summoner.most_champions.champion_stats.death AS champ_death, \
+           summoner.most_champions.champion_stats.assist AS champ_assist, \
+           summoner.most_champions.champion_stats.gold_earned AS gold_earned, \
+           summoner.most_champions.champion_stats.minion_kill AS minion_kill, \
+           summoner.most_champions.champion_stats.game_length_second AS game_length_second, \
+           summoner.most_champions.champion_stats.vision_wards_bought_in_game AS vision_wards_bought_in_game, \
+           summoner.most_champions.champion_stats.vision_score AS vision_score, \
+           summoner.most_champions.champion_stats.wards_placed AS wards_placed, \
+           summoner.most_champions.champion_stats.wards_killed AS wards_killed, \
+           summoner.most_champions.champion_stats.heal AS heal, \
+           summoner.most_champions.champion_stats.time_ccing_others AS time_ccing_others, \
+           summoner.most_champions.champion_stats.damage_dealt_to_champions AS damage_dealt_to_champions \
          FROM \
            summoner_info"
-num_partitions: 1
+num_partitions: 4
 dataset_id: "summoner_dataset"
 table_id: "summoner_table"
