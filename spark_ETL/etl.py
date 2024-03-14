@@ -46,7 +46,7 @@ class ETL():
         # 빅쿼리 테이블
         project_id = credential.project_id
         dataset_id = dataset_id
-        table_id = "test_table"
+        table_id = table_id
         if view_id == "summoner_info":
             print(f"view_id: {view_id}")
             df = pyd.process_summoner_data(df)
