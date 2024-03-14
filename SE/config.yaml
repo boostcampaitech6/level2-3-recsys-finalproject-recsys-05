@@ -3,7 +3,7 @@
 
 "wandb_project_name": "cossim"
 "tier" : "diamond"
-"data_dir": "../data/"
+"data_dir": "../../data/"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 
