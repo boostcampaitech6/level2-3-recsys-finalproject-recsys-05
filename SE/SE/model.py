@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 
+
+
 class SimilarityModel(nn.Module):
     def __init__(self, cfg):
         super(SimilarityModel, self).__init__()

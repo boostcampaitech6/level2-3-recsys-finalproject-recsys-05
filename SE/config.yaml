@@ -9,15 +9,15 @@
 
 "batch_size" : 128
 "dropout" : 0.2
-"hidden_size" : 5120
+"hidden_size" : 256
 "emb_size" : 128
 "max_seq_len" : 10
 "train_ratio" : 0.8
 "num_workers" : 6
 
 "n_epochs" : 300
-"lr" : 0.001
-"max_steps" : 5
+"lr" : 0.0001
+"max_steps" : 7
 
 "cate_cols" :
 - 'champion_id'

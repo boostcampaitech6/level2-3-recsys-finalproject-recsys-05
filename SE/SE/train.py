@@ -83,6 +83,7 @@ def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Opt
         output2 = model(B_cate, B_cont)
 
         output = F.cosine_similarity(output1, output2, dim=1)
+        output = torch.abs(output)
         
         loss = loss_fun(output, result) 
         loss.backward()
@@ -119,6 +120,7 @@ def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module, de
         output2 = model(B_cate, B_cont)
 
         output = F.cosine_similarity(output1, output2, dim=1)
+        output = torch.abs(output)
 
         loss = loss_fun(output, result)
         total_loss += loss.item()
