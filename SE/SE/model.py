@@ -10,6 +10,7 @@ class SimilarityModel(nn.Module):
         self.cate_proj = nn.Sequential(
             nn.Linear(cfg['max_seq_len'] * cfg['emb_size'] * len(cfg['cate_col']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
+            nn.Dropout(p=cfg['dropout'])
         )
 
         # continuous
@@ -17,13 +18,15 @@ class SimilarityModel(nn.Module):
             nn.BatchNorm1d(cfg['max_seq_len'] * len(cfg['cont_col'])),
             nn.Linear(cfg['max_seq_len'] * len(cfg['cont_col']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
+            nn.Dropout(p=cfg['dropout'])
         )
 
         # combination
         self.comb_proj = nn.Sequential(
             nn.ReLU(),
             nn.Linear(cfg['hidden_size'] * 2, cfg['hidden_size']),
-            nn.LayerNorm(cfg['hidden_size'])
+            nn.LayerNorm(cfg['hidden_size']),
+            nn.Dropout(p=cfg['dropout'])
         )
 
 

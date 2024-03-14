@@ -1,0 +1,56 @@
+"device" : "cuda"
+"seed" : 0
+
+"data_dir": "../../data/"
+"model_dir" : "./models/"
+"output_dir" : "./outputs/"
+
+"batch_size" : 256
+"dropout" : 0.2
+"hidden_size" : 8
+"emb_size" : 8
+"max_seq_len" : 10
+
+"n_epochs" : 5 
+"lr" : 0.001
+
+"cate_cols" :
+- 'champion_id'
+- 'team_key'
+- 'position'
+- 'trinket_item'
+- 'item_0'
+- 'item_1'
+- 'item_2'
+- 'item_3'
+- 'item_4'
+- 'rune_0'
+- 'rune_1'
+- 'spell_0'
+- 'spell_1'
+### match_by_summoner의 result는 학습에 사용됨, match_by_match의 result가 target으로 사용
+- 'result'
+
+"cont_cols" :
+- 'game_length_second'
+- 'summoner_level'
+- 'champion_level'
+- 'damage_self_mitigated'
+- 'damage_dealt_to_objectives'
+- 'damage_dealt_to_turrets'
+- 'total_damage_taken'
+- 'total_damage_dealt'
+- 'total_damage_dealt_to_champions'
+- 'time_ccing_others'
+- 'vision_score'
+- 'vision_wards_bought_in_game'
+- 'sight_wards_bought_in_game'
+- 'ward_kill'
+- 'ward_place'
+- 'turret_kill'
+- 'kill'
+- 'death'
+- 'assist'
+- 'neutral_minion_kill'
+- 'gold_earned'
+- 'total_heal'

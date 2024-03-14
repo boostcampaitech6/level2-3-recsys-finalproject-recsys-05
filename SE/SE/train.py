@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from sklearn.metrics import accuracy_score, roc_auc_score
-from .utils import get_logger, logging_conf
+from SE.util import get_logger, logging_conf
 from tqdm import tqdm
 import os
 from datetime import datetime
@@ -11,6 +11,43 @@ import wandb
 
 
 logger = get_logger(logging_conf)
+
+
+def get_dataloader(cfg, dataset) -> tuple:
+    from SE.dataset import custom_collate_fn
+    from torch.utils.data import DistributedSampler
+    
+    dataset_size = len(dataset)
+    train_size = int(dataset_size * cfg['train_ratio'])
+    valid_size = dataset_size - train_size
+
+    indices = torch.randperm(dataset_size).tolist()
+
+    train_indices = indices[:train_size]
+    valid_indices = indices[train_size:]
+
+    train_dataset = Subset(dataset, train_indices)
+    valid_dataset = Subset(dataset, valid_indices)
+
+    train_sampler = DistributedSampler(dataset=train_dataset, shuffle=True)
+    valid_sampler = DistributedSampler(dataset=valid_dataset, shuffle=True)
+
+    train_loader = DataLoader(dataset=train_dataset, 
+                              batch_size=cfg['batch_size'], 
+                              shuffle=True,
+                              num_workers=cfg['num_workers'],
+                              sampler=train_sampler,
+                              collate_fn=custom_collate_fn,
+                              pin_memory=True)
+    valid_loader = DataLoader(dataset=valid_dataset, 
+                              batch_size=cfg['batch_size'], 
+                              shuffle=True,
+                              num_workers=cfg['num_workers'],
+                              sampler=valid_sampler,
+                              collate_fn=custom_collate_fn,
+                              pin_memory=True)
+
+    return train_loader, valid_loader
 
 
 def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module):
@@ -86,7 +123,7 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
         train_auc, train_acc, train_loss = train(train_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun)
     
         # VALID
-        valid_auc, valid_acc, valid_loss = validate(model=model, valid_loader=valid_loader)
+        valid_auc, valid_acc, valid_loss = validate(model=model, valid_loader=valid_loader, loss_fun=loss_fun)
 
         wandb.log(dict(train_acc_epoch=train_acc,
                        train_auc_epoch=train_auc,

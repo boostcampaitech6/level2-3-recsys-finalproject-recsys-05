@@ -83,14 +83,10 @@ def parse_args():
     parser.add_argument("--data_dir", type=str, help="")
     parser.add_argument("--output_dir", type=str, help="")
     parser.add_argument("--model_dir", type=str, help="")
-    parser.add_argument("--model_name", type=str, help="")
     
     parser.add_argument("--batch_size", type=int, help="")
     parser.add_argument("--emb_size", type=int, help="")
     parser.add_argument("--hidden_size", type=int, help="")
-    parser.add_argument("--n_layers", type=int, help="")
-    parser.add_argument("--n_head", type=int, help="")
-    parser.add_argument("--seq_len", type=int, help="")
     parser.add_argument("--n_epochs", type=int, help="")
     parser.add_argument("--lr", type=float, help="")
     parser.add_argument("--dropout", type=float, help="")
@@ -127,25 +123,3 @@ def init_for_distributed(opts):
 
     # 2. init_process_group
     dist.init_process_group(backend="nccl")
-
-
-def get_dataloader(cfg, dataset) -> tuple:
-    from SE.dataset import custom_collate_fn
-    from torch.utils.data import DataLoader, Subset
-    
-    dataset_size = len(dataset)
-    train_size = int(dataset_size * cfg['train_ratio'])
-    valid_size = dataset_size - train_size
-
-    indices = torch.randperm(dataset_size).tolist()
-
-    train_indices = indices[:train_size]
-    valid_indices = indices[train_size:]
-
-    train_dataset = Subset(dataset, train_indices)
-    valid_dataset = Subset(dataset, valid_indices)
-
-    train_loader = DataLoader(train_dataset, batch_size=cfg['batch_size'], shuffle=True, collate_fn=custom_collate_fn)
-    valid_loader = DataLoader(valid_dataset, batch_size=cfg['batch_size'], shuffle=True, collate_fn=custom_collate_fn)
-
-    return train_loader, valid_loader
