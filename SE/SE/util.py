@@ -110,16 +110,17 @@ def set_seeds(seed: int = 0):
     torch.backends.cudnn.benchmark = False
 
 
-def init_for_distributed(opts):
+def init_for_distributed(cfg):
     import torch.distributed as dist
     
     # 1. setting for distributed training
-    opts.global_rank = int(os.environ['RANK'])
-    opts.local_rank = int(os.environ['LOCAL_RANK'])
-    opts.world_size = int(os.environ['WORLD_SIZE'])
-    torch.cuda.set_device(opts.local_rank)
-    if opts.global_rank is not None and opts.local_rank is not None:
-        print("Use GPU: [{}/{}] for training".format(opts.global_rank, opts.local_rank))
+    cfg['global_rank'] = int(os.environ['RANK'])
+    cfg['local_rank'] = int(os.environ['LOCAL_RANK'])
+    cfg['world_size'] = int(os.environ['WORLD_SIZE'])
+    print("global_rank: {}, local_rank: {}, world_size: {}".format(cfg['global_rank'], cfg['local_rank'], cfg['world_size']))
+    torch.cuda.set_device(cfg['local_rank'])
+    if cfg['global_rank'] is not None and cfg['local_rank'] is not None:
+        print("Use GPU: [{}/{}] for training".format(cfg['global_rank'], cfg['local_rank']))
 
     # 2. init_process_group
     dist.init_process_group(backend="nccl")

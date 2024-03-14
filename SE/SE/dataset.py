@@ -8,8 +8,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 class SimilarityDataset(Dataset):
     def __init__(self, cfg, summoner_df, match_df):
-        self.cate_col = cfg['cate_col']
-        self.cont_col = cfg['cont_col']
+        self.cate_col = cfg['cate_cols']
+        self.cont_col = cfg['cont_cols']
         self.max_seq_len = cfg['max_seq_len']    ### 10
         self.device = cfg['device']
         
@@ -18,7 +18,7 @@ class SimilarityDataset(Dataset):
 
 
     def prepare_summoner(self, df):
-        df = df.sort_values(by='summoner_id')
+        df = df.sort_values(by=['summoner_id', 'match_id']).reset_index(drop=True)
         summoner_compression_table = []
 
         ### summoner_compression_table
@@ -42,7 +42,7 @@ class SimilarityDataset(Dataset):
     
 
     def prepare_match(self, df, k=2):
-        df = df.sort_values(by='match_id')
+        df = df.sort_values(by=['match_id', 'team_key']).reset_index(drop=True)
         temp = df.groupby(['match_id', 'team_key']).size()
 
         len = temp.__len__()
@@ -110,7 +110,7 @@ class SimilarityDataset(Dataset):
         result = match_df['result'].values[0]
         result = torch.tensor(result, dtype=torch.float).expand(axis0)
 
-        return A_cate_data.to(self.device), A_cont_data.to(self.device), B_cate_data.to(self.device), B_cont_data.to(self.device), result.to(self.device)
+        return A_cate_data, A_cont_data, B_cate_data, B_cont_data, result
         
 
     def __len__(self):

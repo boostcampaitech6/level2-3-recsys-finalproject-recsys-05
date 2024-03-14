@@ -1,18 +1,23 @@
 "device" : "cuda"
 "seed" : 0
 
-"data_dir": "../../data/"
+"wandb_project_name": "cossim"
+"tier" : "diamond"
+"data_dir": "../data/"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 
-"batch_size" : 256
+"batch_size" : 128
 "dropout" : 0.2
-"hidden_size" : 8
-"emb_size" : 8
+"hidden_size" : 5120
+"emb_size" : 128
 "max_seq_len" : 10
+"train_ratio" : 0.8
+"num_workers" : 6
 
-"n_epochs" : 5 
+"n_epochs" : 300
 "lr" : 0.001
+"max_steps" : 5
 
 "cate_cols" :
 - 'champion_id'

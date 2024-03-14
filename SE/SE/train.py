@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.distributed as dist
 from torch.utils.data import DataLoader, Subset
 from sklearn.metrics import accuracy_score, roc_auc_score
 from SE.util import get_logger, logging_conf
@@ -34,15 +35,15 @@ def get_dataloader(cfg, dataset) -> tuple:
 
     train_loader = DataLoader(dataset=train_dataset, 
                               batch_size=cfg['batch_size'], 
-                              shuffle=True,
                               num_workers=cfg['num_workers'],
+                            #   num_workers=int(cfg['num_workers'] / cfg['world_size']),
                               sampler=train_sampler,
                               collate_fn=custom_collate_fn,
                               pin_memory=True)
     valid_loader = DataLoader(dataset=valid_dataset, 
                               batch_size=cfg['batch_size'], 
-                              shuffle=True,
                               num_workers=cfg['num_workers'],
+                            #   num_workers=int(cfg['num_workers'] / cfg['world_size']),
                               sampler=valid_sampler,
                               collate_fn=custom_collate_fn,
                               pin_memory=True)
@@ -50,7 +51,24 @@ def get_dataloader(cfg, dataset) -> tuple:
     return train_loader, valid_loader
 
 
-def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module):
+def evaluate(acc, auc, average_loss, device):
+    total_acc = torch.tensor(acc).to(device)
+    total_auc = torch.tensor(auc).to(device)
+    total_loss = torch.tensor(average_loss).to(device)
+
+    dist.all_reduce(total_acc, op=dist.ReduceOp.SUM)
+    dist.all_reduce(total_auc, op=dist.ReduceOp.SUM)
+    dist.all_reduce(total_loss, op=dist.ReduceOp.SUM)
+
+    world_size = dist.get_world_size()
+    avg_total_acc = total_acc / world_size
+    avg_total_auc = total_auc / world_size
+    avg_total_loss = total_loss / world_size
+
+    return avg_total_acc, avg_total_auc, avg_total_loss
+
+
+def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, device: str):
     model.train()
     torch.set_grad_enabled(True)
 
@@ -58,6 +76,8 @@ def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Opt
     target_list = []
     output_list = []
     for A_cate, A_cont, B_cate, B_cont, result in tqdm(train_loader):
+        A_cate, A_cont, B_cate, B_cont, result = A_cate.to(device), A_cont.to(device), B_cate.to(device), B_cont.to(device), result.to(device)
+
         optimizer.zero_grad()
         output1 = model(A_cate, A_cont)
         output2 = model(B_cate, B_cont)
@@ -79,12 +99,14 @@ def train(model: nn.Module, train_loader: DataLoader, optimizer: torch.optim.Opt
     auc = roc_auc_score(y_true=target_list, y_score=output_list)
     average_loss = total_loss / len(train_loader)
 
-    logger.info("TRAIN AUC : %.4f, ACC : %.4f, LOSS : %.4f", auc, acc, average_loss)
+    avg_total_acc, avg_total_auc, avg_total_loss = evaluate(acc, auc, average_loss, device)
 
-    return auc, acc, average_loss
+    logger.info("TRAIN AUC : %.4f, ACC : %.4f, LOSS : %.4f", avg_total_acc, avg_total_auc, avg_total_loss)
+
+    return avg_total_acc, avg_total_auc, avg_total_loss
 
 
-def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module):
+def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module, device: str):
     model.eval()
     torch.set_grad_enabled(False)
 
@@ -92,6 +114,7 @@ def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module):
     target_list = []
     output_list = []
     for A_cate, A_cont, B_cate, B_cont, result in tqdm(valid_loader):
+        A_cate, A_cont, B_cate, B_cont, result = A_cate.to(device), A_cont.to(device), B_cate.to(device), B_cont.to(device), result.to(device)
         output1 = model(A_cate, A_cont)
         output2 = model(B_cate, B_cont)
 
@@ -109,40 +132,47 @@ def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module):
     auc = roc_auc_score(y_true=target_list, y_score=output_list)
     average_loss = total_loss / len(valid_loader)
 
-    logger.info("VALID AUC : %.4f, ACC : %.4f, LOSS : %.4f", auc, acc, average_loss)
+    avg_total_acc, avg_total_auc, avg_total_loss = evaluate(acc, auc, average_loss, device)
 
-    return auc, acc, average_loss
+    logger.info("VALID AUC : %.4f, ACC : %.4f, LOSS : %.4f", avg_total_acc, avg_total_auc, avg_total_loss)
+
+    return avg_total_acc, avg_total_auc, avg_total_loss
 
 
-def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, n_epochs: int = 100, model_dir: str = "model", max_step: int = 5):
-    logger.info(f"Training Started : n_epochs={n_epochs}")
+def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, cfg):
+    logger.info(f"Training Started : n_epochs={cfg['n_epochs']}")
     best_auc, best_epoch = 0, -1
-    for e in range(n_epochs):
+    for e in range(cfg['n_epochs']):
         logger.info("Epoch: %s", e)
         # TRAIN
-        train_auc, train_acc, train_loss = train(train_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun)
+        train_auc, train_acc, train_loss = train(train_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun, device = cfg['device'])
     
         # VALID
-        valid_auc, valid_acc, valid_loss = validate(model=model, valid_loader=valid_loader, loss_fun=loss_fun)
+        valid_auc, valid_acc, valid_loss = validate(model=model, valid_loader=valid_loader, loss_fun=loss_fun, device = cfg['device'])
 
-        wandb.log(dict(train_acc_epoch=train_acc,
-                       train_auc_epoch=train_auc,
-                       train_loss_epoch=train_loss,
-                       valid_acc_epoch=valid_auc,
-                       valid_auc_epoch=valid_acc,
-                       valid_loss_epoch=valid_loss))
+        if dist.get_rank() == 0:
+            wandb.log(dict(train_acc_epoch=train_acc,
+                            train_auc_epoch=train_auc,
+                            train_loss_epoch=train_loss,
+                            valid_acc_epoch=valid_auc,
+                            valid_auc_epoch=valid_acc,
+                            valid_loss_epoch=valid_loss))
 
         if valid_auc > best_auc:
             logger.info("Best model updated AUC from %.4f to %.4f", best_auc, valid_auc)
             best_auc, best_epoch = valid_auc, e
-            torch.save(obj= {"model": model.state_dict(), "epoch": e + 1},
-                       f=os.path.join(model_dir, f"{valid_auc:.2%}_{datetime.now().strftime("%Y_%m_%d_%H_%M")}.pt"))
+
+            if dist.get_rank() == 0:
+                os.makedirs(cfg['model_dir'], exist_ok=True)
+                now = datetime.now().strftime("%Y_%m_%d_%H_%M")
+                torch.save(obj= {"model": model.state_dict(), "epoch": e + 1},
+                        f=os.path.join(cfg['model_dir'], f"{valid_auc:.2%}_{now}.pt"))
             
             ### early stopping
             cur_step = 0
         else:
             cur_step += 1
-            if cur_step > max_step:
+            if cur_step > cfg['max_steps']:
                 logger.info(f"Early Stopping at {e+1}'th epoch")
                 break
                

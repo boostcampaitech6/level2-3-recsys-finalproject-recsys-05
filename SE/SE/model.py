@@ -8,15 +8,15 @@ class SimilarityModel(nn.Module):
         # categorical
         self.cate_emb = nn.Embedding(cfg['n_layers'], cfg['emb_size'], padding_idx=0)
         self.cate_proj = nn.Sequential(
-            nn.Linear(cfg['max_seq_len'] * cfg['emb_size'] * len(cfg['cate_col']), cfg['hidden_size']),
+            nn.Linear(cfg['max_seq_len'] * cfg['emb_size'] * len(cfg['cate_cols']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
         )
 
         # continuous
         self.cont_proj = nn.Sequential(
-            nn.BatchNorm1d(cfg['max_seq_len'] * len(cfg['cont_col'])),
-            nn.Linear(cfg['max_seq_len'] * len(cfg['cont_col']), cfg['hidden_size']),
+            nn.BatchNorm1d(cfg['max_seq_len'] * len(cfg['cont_cols'])),
+            nn.Linear(cfg['max_seq_len'] * len(cfg['cont_cols']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
         )
