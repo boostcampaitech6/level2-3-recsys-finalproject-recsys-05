@@ -1,9 +1,13 @@
 import os
+import uuid
 from django.shortcuts import redirect, render
 from django.core.handlers.wsgi import WSGIRequest
 import requests
+from django.contrib.auth.decorators import login_required
 
 from users.models import SummonerInfo
+from app.riot_client import get_client
+from app.riot_assets import get_riot_assets
 
 
 def riot_txt(request: WSGIRequest):
@@ -38,10 +42,9 @@ def get_account_by_summoner_name(request: WSGIRequest):
 
         return render(request, "summoner/index.html", {"summoner": summoner_info})
 
-    url = f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/{summoner_name}"
-    api_key = os.environ.get("RIOT_API_KEY")
+    client = get_client()
 
-    response = requests.get(url, headers={"X-Riot-Token": api_key})
+    response = client.get_account_by_summoner_name(summoner_name)
 
     if response.status_code == 200:
         data = response.json()
@@ -65,3 +68,12 @@ def get_account_by_summoner_name(request: WSGIRequest):
 
 def recommend_ai(request: WSGIRequest):
     return render(request, "recommend/ai.html", {"user": request.user})
+
+
+@login_required
+def recommend_result(request: WSGIRequest):
+    return render(
+        request,
+        "recommend/result.html",
+        {"user": request.user},
+    )
