@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from users.models import SummonerInfo
 from app.riot_client import get_client
 from app.riot_assets import get_riot_assets
+from rest_framework import viewsets
+from app.serializers import SummonerSerializer
+from app.models import Summoner
 
 
 def riot_txt(request: WSGIRequest):
@@ -77,3 +80,8 @@ def recommend_result(request: WSGIRequest):
         "recommend/result.html",
         {"user": request.user},
     )
+
+
+class SummonerViewSet(viewsets.ModelViewSet):
+    queryset = Summoner.objects.all()
+    serializer_class = SummonerSerializer
