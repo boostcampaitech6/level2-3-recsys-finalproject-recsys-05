@@ -8,7 +8,15 @@ SERVERS=("bgw-server" "ngo-server" "lsg-server" "jsj-server")
 for i in $(seq 0 $((${#SERVERS[@]} - 1))); do
 	COMMANDS="
 	pkill -15 -u bgw torchrun;
-    sleep 10;
+    "
+
+	ssh -n ${SERVERS[i]} "$(echo -e $COMMANDS)"
+done
+
+sleep 10;
+
+for i in $(seq 0 $((${#SERVERS[@]} - 1))); do
+	COMMANDS="
 	pkill -9 -u bgw torchrun;
     "
 

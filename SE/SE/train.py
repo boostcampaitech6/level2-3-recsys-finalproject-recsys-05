@@ -156,8 +156,8 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
             wandb.log(dict(train_acc_epoch=train_acc,
                             train_auc_epoch=train_auc,
                             train_loss_epoch=train_loss,
-                            valid_acc_epoch=valid_auc,
-                            valid_auc_epoch=valid_acc,
+                            valid_acc_epoch=valid_acc,
+                            valid_auc_epoch=valid_auc,
                             valid_loss_epoch=valid_loss))
 
         if valid_auc > best_auc:

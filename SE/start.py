@@ -1,19 +1,76 @@
-import subprocess
+import argparse
+import paramiko
+from scp import SCPClient
 
-def parse_args():
-    import argparse
 
-    parser = argparse.ArgumentParser()
+# 입력 인자 처리
+parser = argparse.ArgumentParser()
+parser.add_argument("--hidden_size", type=str, required=True)
+parser.add_argument("--emb_size", type=str, required=True)
+parser.add_argument("--dropout", type=str, required=True)
+parser.add_argument("--lr", type=str, required=True)
+args = parser.parse_args()
 
-    parser.add_argument("--emb_size", type=int, help="")
-    parser.add_argument("--hidden_size", type=int, help="")
-    parser.add_argument("--lr", type=float, help="")
-    parser.add_argument("--dropout", type=float, help="")
+# 원격 서버 접속 정보
+servers = ["ngo-server", "lsg-server", "jsj-server"]
 
-    args = parser.parse_args()
+# SSH 접속 설정
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    return args
+for i, server in enumerate(servers, start=1):
+    try:
+        # SSH 접속
+        ssh.connect(server)
+        scp = SCPClient(ssh.get_transport())
 
-args = parse_args()
+        # 데이터 디렉토리 전송
+        scp.put('../../data/', recursive=True, remote_path='gpu-cluster/')
 
-result = subprocess.run(['./your-script.sh', f'--emb_size={args.emb_size}', f'--hidden_size={args.hidden_size}', f'--lr={args.lr}',  f'--dropout={args.dropout}'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        # 원격 명령어 실행
+        commands = f"""
+        cd gpu-cluster;
+        source multi-gpu/bin/activate;
+        cd level2-3-recsys-finalproject-recsys-05;
+        git checkout cossim;
+        git pull;
+        cd SE;
+        nohup torchrun --nnodes={len(servers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
+        run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} > nohup.out 2>&1 &
+        """
+        stdin, stdout, stderr = ssh.exec_command(commands)
+        print(stdout.read().decode())
+        print(stderr.read().decode())
+
+    finally:
+        if ssh:
+            ssh.close()
+
+
+
+try:
+    # SSH 접속
+    ssh.connect("bgw-server")
+    scp = SCPClient(ssh.get_transport())
+
+    # 데이터 디렉토리 전송
+    scp.put('../../data/', recursive=True, remote_path='gpu-cluster/data')
+
+    # 원격 명령어 실행
+    commands = f"""
+    cd gpu-cluster;
+    source multi-gpu/bin/activate;
+    cd level2-3-recsys-finalproject-recsys-05;
+    git checkout cossim;
+    git pull;
+    cd SE;
+    torchrun --nnodes={len(servers) + 1} --nproc_per_node=1 --node_rank=0 --master_addr=10.0.2.7 --master_port=20000 \
+    run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} &
+    """
+    stdin, stdout, stderr = ssh.exec_command(commands)
+    print(stdout.read().decode())
+    print(stderr.read().decode())
+
+finally:
+    if ssh:
+        ssh.close()
