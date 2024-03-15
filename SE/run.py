@@ -32,6 +32,7 @@ def main(cfg: CFG):
 
     run(model, train_loader, valid_loader, optimizer, loss_fun, cfg)
 
+    torch.cuda.empty_cache()
 
 if __name__ == '__main__':
     args = parse_args()
