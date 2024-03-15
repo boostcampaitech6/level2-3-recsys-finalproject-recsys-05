@@ -2,7 +2,7 @@ program: start.py
 method: bayes
 project: "cossim"
 metric:
-  name: valid_auc_epoch
+  name: valid_acc_epoch
   goal: maximize
 parameters:
   hidden_size :

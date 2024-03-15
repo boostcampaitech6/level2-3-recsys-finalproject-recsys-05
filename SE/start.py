@@ -1,6 +1,6 @@
 import argparse
 from doctest import master
-from time import sleep
+import time
 import paramiko
 from scp import SCPClient
 
@@ -75,7 +75,7 @@ finally:
         ssh.close()
 
 
-sleep(10)
+time.sleep(10)
 for server in [master] + worker:
     try:
         # SSH 접속
@@ -91,7 +91,7 @@ for server in [master] + worker:
         if ssh:
             ssh.close()
 
-sleep(10)
+time.sleep(10)
 for server in [master] + worker:
     try:
         # SSH 접속
