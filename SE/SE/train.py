@@ -143,7 +143,7 @@ def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module, de
 
 def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, cfg):
     logger.info(f"Training Started : n_epochs={cfg['n_epochs']}")
-    best_acc, best_epoch = 0, -1
+    best_auc, best_acc, best_epoch = 0, 0, -1
     for e in range(cfg['n_epochs']):
         logger.info("Epoch: %s", e)
         # TRAIN
@@ -160,8 +160,20 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
                             valid_auc_epoch=valid_auc,
                             valid_loss_epoch=valid_loss))
 
-        if valid_acc > best_acc:
-            logger.info("Best model updated AUC from %.4f to %.4f", best_acc, valid_acc)
+        if valid_auc > best_auc:
+            logger.info("Best model updated AUC from %.4f to %.4f", best_auc, valid_auc)
+            best_auc, best_epoch = valid_auc, e
+
+            if dist.get_rank() == 0:
+                os.makedirs(cfg['model_dir'], exist_ok=True)
+                now = datetime.now().strftime("%Y_%m_%d_%H_%M")
+                torch.save(obj= {"model": model.state_dict(), "epoch": e + 1},
+                        f=os.path.join(cfg['model_dir'], f"{valid_auc:.2%}_{now}.pt"))
+            
+            ### early stopping
+            cur_step = 0
+        elif valid_acc > best_acc:
+            logger.info("Best model updated ACC from %.4f to %.4f", best_acc, valid_acc)
             best_acc, best_epoch = valid_acc, e
 
             if dist.get_rank() == 0:
