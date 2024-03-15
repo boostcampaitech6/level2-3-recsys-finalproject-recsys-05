@@ -3,6 +3,7 @@ from doctest import master
 import time
 import paramiko
 from scp import SCPClient
+import subprocess
 
 
 # 입력 인자 처리
@@ -14,7 +15,7 @@ parser.add_argument("--lr", type=str, required=True)
 args = parser.parse_args()
 
 # 원격 서버 접속 정보
-servers = ["bgw-server", "ngo-server", "lsg-server", "jsj-server"]
+workers = ["ngo-server", "lsg-server", "jsj-server"]
 
 
 def connect_and_execute(server, commands, copy=False):
@@ -35,7 +36,7 @@ def connect_and_execute(server, commands, copy=False):
 
 
 # 사용 예
-for i, server in enumerate(servers):
+for i, worker in enumerate(workers, start=1):
     commands = f"""
     cd gpu-cluster;
     source multi-gpu/bin/activate;
@@ -43,24 +44,29 @@ for i, server in enumerate(servers):
     git checkout cossim;
     git pull;
     cd SE;
-    nohup torchrun --nnodes={len(servers)} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
+    nohup torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
     run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} > nohup.out 2>&1 &
     """
-    connect_and_execute(server, commands, copy=True)
+    connect_and_execute(worker, commands, copy=True)
 
 
+
+command = f"torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank=0 --master_addr=10.0.2.7 --master_port=20000 \
+    run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr}"
+
+subprocess.run(command, shell=True, capture_output=True, text=True)
 
 time.sleep(10)
-for server in servers:
+for worker in workers:
     commands = f"""
     pkill -15 -u bgw torchrun;
     """
-    connect_and_execute(server, commands)
+    connect_and_execute(worker, commands)
 
 
 time.sleep(10)
-for server in servers:
+for server in workers:
     commands = f"""
     pkill -9 -u bgw torchrun;
     """
-    connect_and_execute(server, commands)
+    connect_and_execute(worker, commands)
