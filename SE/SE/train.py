@@ -143,7 +143,7 @@ def validate(model: nn.Module, valid_loader: DataLoader, loss_fun: nn.Module, de
 
 def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, cfg):
     logger.info(f"Training Started : n_epochs={cfg['n_epochs']}")
-    best_auc, best_epoch = 0, -1
+    best_acc, best_epoch = 0, -1
     for e in range(cfg['n_epochs']):
         logger.info("Epoch: %s", e)
         # TRAIN
