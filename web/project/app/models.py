@@ -1,5 +1,6 @@
 # Create your models here.
 
+from django.contrib.postgres.search import SearchVector, SearchVectorField
 from users.models import AppUser as User
 from django.db import models
 
@@ -35,6 +36,11 @@ class Summoner(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['name'])
+        ]
 
 
 class LeagueEntry(models.Model):
@@ -55,3 +61,8 @@ class LeagueEntry(models.Model):
 
     def __str__(self):
         return f"{self.summoner.name} - {self.tier} {self.rank}"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['summoner', 'queue_type'], name='unique_league_entry')
+        ]

@@ -1,16 +1,18 @@
 import os
 import uuid
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.core.handlers.wsgi import WSGIRequest
 import requests
 from django.contrib.auth.decorators import login_required
 
 from users.models import SummonerInfo
+from rest_framework.decorators import api_view
 from app.riot_client import get_client
 from app.riot_assets import get_riot_assets
 from rest_framework import viewsets
-from app.serializers import SummonerSerializer
-from app.models import Summoner
+from app.serializers import SummonerSerializer, LeagueEntrySerializer
+from app.models import Summoner, LeagueEntry
 
 
 def riot_txt(request: WSGIRequest):
@@ -82,6 +84,46 @@ def recommend_result(request: WSGIRequest):
     )
 
 
-class SummonerViewSet(viewsets.ModelViewSet):
-    queryset = Summoner.objects.all()
-    serializer_class = SummonerSerializer
+@api_view(["GET"])
+def search_summoners_by_name(request: WSGIRequest):
+    name = request.GET.get("name")
+    count = request.GET.get("count")
+    if not name or not count:
+        return JsonResponse({"error": "name, count are required"}, status=400)
+    
+    try:
+        count = int(count)
+    except ValueError:
+        return JsonResponse({"error": "count must be an integer"}, status=400)
+    
+    if count > 10:
+        return JsonResponse({"error": "count must be less than or equal to 10"}, status=400)
+    
+    queryset = Summoner.objects.filter(name__startswith=name)[:count]
+    serializer = SummonerSerializer(queryset, many=True)
+    
+    summoners = serializer.data
+    
+    summoner_ids = [
+        summoner["id"]
+        for summoner in serializer.data
+    ]
+    
+    queryset = LeagueEntry.objects.filter(summoner_id__in=summoner_ids)
+    serializer = LeagueEntrySerializer(queryset, many=True)
+    
+    league_entries = serializer.data
+    
+    result = [
+        {
+            "summoner": summoner,
+            "league_entries": [
+                league_entry
+                for league_entry in league_entries
+                if league_entry["summoner"] == summoner["id"]
+            ]
+        }
+        for summoner in summoners
+    ]
+    
+    return JsonResponse(result, safe=False)

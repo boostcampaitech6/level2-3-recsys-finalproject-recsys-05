@@ -28,7 +28,7 @@ ENV = os.getenv("ENV", "development")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENV == "production":
-    DEBUG = False
+    DEBUG = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SESSION_COOKIE_SECURE = True
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "app",
     "users",
     "rest_framework",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "project.middleware.user_activity_logger.UserActivityLoggerMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -173,3 +175,12 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 AUTH_USER_MODEL = "users.AppUser"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]

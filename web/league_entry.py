@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import os
 import asyncpg
 import aiohttp
@@ -14,15 +15,33 @@ class LeagueEntryCrawler:
         self.api_key = os.environ.get("RIOT_API_KEY")
         self.tiers = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"]
         self.divisions = ["I", "II", "III", "IV"]
+        
+        self.db_user = os.environ.get("POSTGRES_USER")
+        self.db_password = os.environ.get("POSTGRES_PASSWORD")
+        self.db_host = "localhost"
+        self.db_port = os.environ.get("POSTGRES_PORT")
+        self.db_name = os.environ.get("POSTGRES_WEB_DB")
+        
+        self.pool = None
+    
+    async def create_db_pool(self):
+        self.pool = await asyncpg.create_pool(
+            user=self.db_user,
+            password=self.db_password,
+            host=self.db_host,
+            port=self.db_port,
+            database=self.db_name,
+        )            
 
     async def run(self):
-        # for tier in self.tiers:
-        #     for division in self.divisions:
-        #         await self.get_league_entries(tier, division)
+        await self.create_db_pool()
 
-        await self.get_league_entries(self.tiers[0], self.divisions[0])
+        for tier in self.tiers:
+            for division in self.divisions:
+                await self.get_league_entries(tier, division)
 
         await self.session.close()
+        await self.pool.close()
 
     async def get_league_entries(self, tier: str, division: str):
         url = f"{self.base_url}/{tier}/{division}?api_key={self.api_key}"
@@ -30,16 +49,82 @@ class LeagueEntryCrawler:
 
         league_entries = await self._fetch(url + f"&page={page}")
 
-        summoners = []
-
         while league_entries:
-            summoners.extend(league_entries)
-            print(f"Fetching page {page}")
+            print(f"Fetching {tier} {division} page {page}... entries: {len(league_entries)}")
+            summoners = [
+                (
+                    league_entry["summonerId"],
+                    league_entry["summonerName"],
+                    datetime.datetime.now(),
+                    datetime.datetime.now(),
+                )
+                for league_entry 
+                in league_entries
+            ]
+            
+            async with self.pool.acquire() as connection:
+                async with connection.transaction():
+                    await connection.executemany(
+                        "INSERT INTO app_summoner (id, name, created_at, updated_at)"
+                        "VALUES ($1, $2, $3, $4)"
+                        "ON CONFLICT (id)"
+                        """
+                        DO UPDATE SET 
+                            name = EXCLUDED.name,
+                            updated_at = EXCLUDED.updated_at
+                        """,
+                        summoners,
+                    )
+
+            entries = [
+                (
+                    league_entry["tier"],
+                    league_entry["rank"],
+                    league_entry["leaguePoints"],
+                    league_entry["wins"],
+                    league_entry["losses"],
+                    league_entry["veteran"],
+                    league_entry["inactive"],
+                    league_entry["freshBlood"],
+                    league_entry["hotStreak"],
+                    league_entry["queueType"],
+                    league_entry["leagueId"],
+                    league_entry["summonerId"],
+                    datetime.datetime.now(),
+                    datetime.datetime.now(),
+                )
+                for league_entry 
+                in league_entries
+            ]
+            async with self.pool.acquire() as connection:
+                async with connection.transaction():
+                    await connection.executemany(
+                        "INSERT INTO app_leagueentry (tier, rank, league_points, wins, losses, veteran, inactive, fresh_blood, hot_streak, queue_type, league_id, summoner_id, created_at, updated_at)"
+                        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)"
+                        "ON CONFLICT (summoner_id, queue_type)"
+                        """
+                        DO UPDATE SET
+                            tier = EXCLUDED.tier,
+                            rank = EXCLUDED.rank,
+                            league_points = EXCLUDED.league_points,
+                            wins = EXCLUDED.wins,
+                            losses = EXCLUDED.losses,
+                            veteran = EXCLUDED.veteran,
+                            inactive = EXCLUDED.inactive,
+                            fresh_blood = EXCLUDED.fresh_blood,
+                            hot_streak = EXCLUDED.hot_streak,
+                            queue_type = EXCLUDED.queue_type,
+                            league_id = EXCLUDED.league_id,
+                            summoner_id = EXCLUDED.summoner_id,
+                            updated_at = EXCLUDED.updated_at
+                        """,
+                        entries,
+                    )
 
             page += 1
             league_entries = await self._fetch(url + f"&page={page}")
-
-        print(summoners)
+            
+        return []
 
     async def _fetch(self, url: str) -> list:
         async with self.session.get(url) as response:
@@ -56,24 +141,8 @@ class LeagueEntryCrawler:
 
 
 async def main():
-    # crawler = LeagueEntryCrawler()
-    # await crawler.run()
-
-    db_user = os.environ.get("POSTGRES_USER")
-    db_password = os.environ.get("POSTGRES_PASSWORD")
-    db_host = "localhost"
-    db_port = os.environ.get("POSTGRES_PORT")
-    db_name = os.environ.get("POSTGRES_WEB_DB")
-
-    db_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-
-    print(f"Connecting to database: {db_url}")
-
-    pool = await asyncpg.create_pool(db_url)
-
-    print("Connected to database")
-
-    await pool.close()
+    crawler = LeagueEntryCrawler()
+    await crawler.run()
 
 
 loop = asyncio.get_event_loop()

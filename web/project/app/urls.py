@@ -6,11 +6,8 @@ from .views import (
     recommend_ai,
     recommend_result,
     riot_txt,
-    SummonerViewSet
+    search_summoners_by_name,
 )
-
-router = routers.DefaultRouter()
-router.register(r"summoners", SummonerViewSet, basename="summoner")
 
 urlpatterns = [
     path("riot.txt", riot_txt),
@@ -18,6 +15,6 @@ urlpatterns = [
     path("summoner/", get_account_by_summoner_name, name="summoner"),
     path("recommend-ai/", recommend_ai, name="recommend-ai"),
     path("recommend-result/", recommend_result, name="recommend-result"),
-    path("api/", include(router.urls)),
+    path("summoners/search/", search_summoners_by_name, name="search-summoners-by-name"),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
-urlpatterns += router.urls
