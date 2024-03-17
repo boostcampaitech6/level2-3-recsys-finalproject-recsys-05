@@ -3,22 +3,22 @@
 
 "wandb_project_name": "sas"
 "tier" : "diamond"
-"data_dir": "~/data2/test"
+"data_dir": "~/data2/test/"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 
 "max_steps" : 7
 "n_epochs" : 300
-"num_workers" : 6
+"num_workers" : 4
 "max_seq_len" : 10
 
-"batch_size" : 128
+"batch_size" : 3
 "dropout" : 0.2
 "hidden_size" : 256
 "emb_size" : 128
 "n_head" : 4
 "train_ratio" : 0.8
-"lr" : 0.0001
+"lr" : 0.0000001
 
 "cate_cols" :
 - 'team_key'

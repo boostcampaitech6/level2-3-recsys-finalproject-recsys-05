@@ -23,7 +23,11 @@ class MultiHeadAttention(nn.Module):
     def forward(self, input, position):
         n_batch = input.shape[0]
         
-        Q = self.lin_Q(input[position])
+        pos_idx = position.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, 1, self.d_feat)
+        input_Q = torch.gather(input, 2, pos_idx)
+        print(input_Q)
+
+        Q = self.lin_Q(input_Q)
         K = self.lin_K(input)
         V = self.lin_V(input)
 
@@ -54,22 +58,22 @@ class SASModel(nn.Module):
         # categorical
         self.cate_emb = nn.Embedding(cfg['n_layers'], cfg['emb_size'], padding_idx=0)
         self.cate_proj = nn.Sequential(
-            nn.Linear(cfg['max_seq_len'] * cfg['emb_size'] * len(cfg['cate_cols']), cfg['hidden_size']),
+            nn.Linear(cfg['emb_size'] * len(cfg['cate_cols']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
         )
 
         # continuous
+        self.cont_norm = nn.BatchNorm1d(cfg['max_seq_len'])
         self.cont_proj = nn.Sequential(
-            nn.BatchNorm1d(cfg['max_seq_len'] * len(cfg['cont_cols'])),
-            nn.Linear(cfg['max_seq_len'] * len(cfg['cont_cols']), cfg['hidden_size']),
+            nn.Linear(len(cfg['cont_cols']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
         )
 
         # combination
         self.comb_proj = nn.Sequential(
-            nn.ReLU(),
+            nn.LeakyReLU(0.1),
             nn.Linear(cfg['hidden_size'] * 2, cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
@@ -79,13 +83,17 @@ class SASModel(nn.Module):
 
 
     def forward(self, cate, cont, position):
-        size = [i for i in cate.size()]
-        cate = self.cate_emb(cate).view(*size[:-1], -1)
+        cate_size = [i for i in cate.size()]
+        cate = self.cate_emb(cate).view(*cate_size[:-1], -1)
         cate = self.cate_proj(cate)
         
+        cont_size = [i for i in cont.size()]
+        cont = cont.view(*cont_size[:-2], -1)
+        cont = self.cont_norm(cont).view(*cont_size)
         cont = self.cont_proj(cont)
 
-        comb = self.comb_proj(torch.cat([cate, cont], dim=1))
+        comb = torch.cat([cate, cont], dim=-1)
+        comb = self.comb_proj(comb)
 
         output = self.self_attn(comb, position)
 

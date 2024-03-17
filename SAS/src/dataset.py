@@ -9,8 +9,6 @@ class SASDataset(Dataset):
     def __init__(self, cfg, summoner_df, match_df):
         self.cate_col = cfg['cate_cols']
         self.cont_col = cfg['cont_cols']
-        self.max_seq_len = cfg['max_seq_len']    ### 10
-        self.device = cfg['device']
         
         self.summoner_df, self.len, self.summoner_compression_table = self.prepare_summoner(summoner_df)
         self.match_df = self.prepare_match(match_df)
@@ -55,7 +53,6 @@ class SASDataset(Dataset):
         summoner_df = self.summoner_df.iloc[match_start: match_end]
 
         match_ids = summoner_df['match_id'].values - 1
-        print(summoner_df['match_id'])
         posision = summoner_df['position_index'].values
 
         cate, cont = [], []
@@ -65,9 +62,12 @@ class SASDataset(Dataset):
             cate.append(self.match_df[i: i+10][self.cate_col].values)
             cont.append(self.match_df[i: i+10][self.cont_col].values)
 
+        cate = np.array(cate)
+        cont = np.array(cont)
+
         cate = torch.tensor(cate, dtype=torch.int)
         cont = torch.tensor(cont, dtype=torch.float)
-        posision = torch.tensor(posision, dtype=torch.int)
+        posision = torch.tensor(posision, dtype=torch.int64)
 
         return cate, cont, posision
 
