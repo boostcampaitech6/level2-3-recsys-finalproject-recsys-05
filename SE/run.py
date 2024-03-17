@@ -2,6 +2,7 @@ import pandas as pd
 from sympy import comp
 import torch
 import torch.nn as nn
+from torch.nn.parallel import DistributedDataParallel as DDP
 from torch import distributed as dist
 import os
 from SE.util import CFG, parse_args, init_for_distributed
@@ -26,6 +27,8 @@ def main(cfg: CFG):
     train_loader, valid_loader = get_dataloader(cfg, dataset)
 
     model = SimilarityModel(cfg).cuda(cfg['local_rank'])
+    model = DDP(module=model,
+                device_ids=[cfg['local_rank']])
 
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg['lr'])
     loss_fun = nn.CrossEntropyLoss()
