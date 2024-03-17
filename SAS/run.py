@@ -1,0 +1,55 @@
+import pandas as pd
+import torch
+from torch import distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+import os
+from src.util import CFG, parse_args, init_for_distributed
+from src.dataset import SASDataset
+from src.model import SASModel
+from src.train import run, get_dataloader
+from src.loss import STD_loss
+from src.util import get_logger, logging_conf
+import wandb
+
+logger = get_logger(logging_conf)
+
+def main(cfg: CFG):
+    if dist.get_rank() == 0:
+        wandb.init(project=cfg['wandb_project_name'])
+
+    tier = 'diamond'
+    match_df = pd.read_csv(os.path.join(cfg['data_dir'], f'{tier}_match_by_match_mod.csv'), compression='gzip')
+    summoner_df = pd.read_csv(os.path.join(cfg['data_dir'], f'{tier}_match_by_summoner_mod.csv'), compression='gzip')
+    logger.info("## csv data loaded")
+
+    cfg['n_layers'] = match_df[cfg['cate_cols']].max().max() + 1
+
+    dataset = SASDataset(cfg, summoner_df, match_df)
+    logger.info("## dataset loaded ")
+
+    train_loader, valid_loader = get_dataloader(cfg, dataset)
+
+    # model = SASModel(cfg).to(cfg['device'])
+    model = SASModel(cfg).cuda(cfg['local_rank'])
+    model = DDP(module=model,
+                device_ids=[cfg['local_rank']])
+                
+    logger.info("## model loaded ")
+
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg['lr'])
+    loss_fun = STD_loss()
+
+    run(model, train_loader, valid_loader, optimizer, loss_fun, cfg)
+
+if __name__ == '__main__':
+    args = parse_args()
+    cfg = CFG('config.yaml')
+
+    for key, value in vars(args).items():
+        if value is not None:
+            cfg[key] = value
+
+    init_for_distributed(cfg)
+    main(cfg)
+    
+    torch.cuda.empty_cache()

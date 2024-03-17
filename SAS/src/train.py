@@ -1,4 +1,5 @@
 import torch
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributed as dist
@@ -45,21 +46,15 @@ def get_dataloader(cfg, dataset) -> tuple:
     return train_loader, valid_loader
 
 
-def evaluate(acc, auc, average_loss, device):
-    total_acc = torch.tensor(acc).to(device)
-    total_auc = torch.tensor(auc).to(device)
+def evaluate(average_loss, device):
     total_loss = torch.tensor(average_loss).to(device)
 
-    dist.all_reduce(total_acc, op=dist.ReduceOp.SUM)
-    dist.all_reduce(total_auc, op=dist.ReduceOp.SUM)
     dist.all_reduce(total_loss, op=dist.ReduceOp.SUM)
 
     world_size = dist.get_world_size()
-    avg_total_acc = total_acc / world_size
-    avg_total_auc = total_auc / world_size
     avg_total_loss = total_loss / world_size
 
-    return avg_total_acc, avg_total_auc, avg_total_loss
+    return avg_total_loss
 
 
 def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, device: str, is_train: bool, optimizer: torch.optim.Optimizer = None):
@@ -71,44 +66,34 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
         torch.set_grad_enabled(False)
 
     total_loss = 0
-    target_list = []
-    output_list = []
-    for A_cate, A_cont, B_cate, B_cont, result in tqdm(data_loader):
-        A_cate, A_cont, B_cate, B_cont, result = A_cate.to(device), A_cont.to(device), B_cate.to(device), B_cont.to(device), result.to(device)
+    for cate, cont, pos in tqdm(data_loader):
+        cate, cont, pos = cate.to(device), cont.to(device), pos.to(device)
 
         if is_train:
             optimizer.zero_grad()
-        output1 = model(A_cate, A_cont)
-        output2 = model(B_cate, B_cont)
-
-        output = F.cosine_similarity(output1, output2, dim=1)
-        output = torch.abs(output)
         
-        loss = loss_fun(output, result) 
+        output = model(cate, cont, pos)
+        
+        loss = loss_fun(output) 
+
         if is_train:
             loss.backward()
             optimizer.step()
 
+        print(loss.item())
         total_loss += loss.item()
-        target_list.append(result.detach().cpu())
-        output_list.append(output.detach().cpu())
-
-    target_list = torch.concat(target_list).numpy()
-    output_list = torch.concat(output_list).numpy()
     
-    acc = accuracy_score(y_true=target_list, y_pred=output_list > 0.5)
-    auc = roc_auc_score(y_true=target_list, y_score=output_list)
     average_loss = total_loss / len(data_loader)
 
-    avg_total_acc, avg_total_auc, avg_total_loss = evaluate(acc, auc, average_loss, device)
+    avg_total_loss = evaluate(average_loss, device)
 
     if is_train:
         mode = "TRAIN"
     else:
         mode = "VALID"
-    logger.info("%s AUC : %.4f, ACC : %.4f, LOSS : %.4f", mode, avg_total_acc, avg_total_auc, avg_total_loss)
+    logger.info("%s LOSS : %.4f", mode, avg_total_loss)
 
-    return avg_total_acc, avg_total_auc, avg_total_loss
+    return avg_total_loss
 
 
 def save_model(model, cfg, epoch, metric):
@@ -120,38 +105,25 @@ def save_model(model, cfg, epoch, metric):
 
 def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, cfg):
     logger.info(f"Training Started : n_epochs={cfg['n_epochs']}")
-    best_auc, best_acc, best_epoch = 0, 0, -1
+    best_loss, best_epoch, cur_step = 99999, -1, 0
     for epoch in range(cfg['n_epochs']):
         logger.info("Epoch: %s", epoch)
         # TRAIN
-        train_auc, train_acc, train_loss = get_loss(data_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun, device = cfg['device'], is_train=True)
+        train_loss = get_loss(data_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun, device = cfg['device'], is_train=True)
     
         # VALID
-        valid_auc, valid_acc, valid_loss = get_loss(model=model, data_loader=valid_loader, loss_fun=loss_fun, device = cfg['device'], is_train=False)
+        valid_loss = get_loss(model=model, data_loader=valid_loader, loss_fun=loss_fun, device = cfg['device'], is_train=False)
 
         if dist.get_rank() == 0:
-            wandb.log(dict(train_acc_epoch=train_acc,
-                            train_auc_epoch=train_auc,
-                            train_loss_epoch=train_loss,
-                            valid_acc_epoch=valid_acc,
-                            valid_auc_epoch=valid_auc,
+            wandb.log(dict(train_loss_epoch=train_loss,
                             valid_loss_epoch=valid_loss))
 
-        if valid_auc > best_auc:
-            logger.info("Best model updated AUC from %.4f to %.4f", best_auc, valid_auc)
-            best_auc, best_epoch = valid_auc, epoch
+        if valid_loss > best_loss:
+            logger.info("Best model updated LOSS from %.4f to %.4f", best_loss, valid_loss)
+            best_loss, best_epoch = valid_loss, epoch
 
             if dist.get_rank() == 0:
-                save_model(model, cfg, epoch, valid_auc)
-            
-            ### early stopping
-            cur_step = 0
-        elif valid_acc > best_acc:
-            logger.info("Best model updated ACC from %.4f to %.4f", best_acc, valid_acc)
-            best_acc, best_epoch = valid_acc, epoch
-
-            if dist.get_rank() == 0:
-                save_model(model, cfg, epoch, valid_acc)
+                save_model(model, cfg, epoch, valid_loss)
             
             ### early stopping
             cur_step = 0

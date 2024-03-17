@@ -1,0 +1,1104 @@
+global_rank: 0, local_rank: 0, world_size: 1
+Use GPU: [0/0] for training
+2024-03-18 00:10:08,053 - root - INFO - ## csv data loaded
+2024-03-18 00:10:08,073 - root - INFO - ## dataset loaded 
+2024-03-18 00:10:09,986 - root - INFO - ## model loaded 
+2024-03-18 00:10:09,987 - root - INFO - Training Started : n_epochs=300
+2024-03-18 00:10:09,987 - root - INFO - Epoch: 0
+tensor([[[[-0.6577, -1.7040,  0.0000,  ..., -0.4784,  1.0371, -0.0000]],
+
+         [[ 0.0000,  0.2503,  1.5613,  ..., -0.4419,  0.3885, -0.5552]],
+
+         [[ 0.0000,  0.1152,  0.3986,  ..., -1.1996, -0.1316, -1.7767]],
+
+         ...,
+
+         [[ 0.3132, -0.4102,  0.7688,  ..., -0.0437,  1.1370, -0.7475]],
+
+         [[ 0.0179, -1.7095,  1.8127,  ..., -1.1949,  0.0000, -1.7239]],
+
+         [[-0.7650, -1.5505,  2.3254,  ...,  0.0000,  0.0000, -2.2185]]],
+
+
+        [[[ 0.0000, -0.1537,  0.1870,  ...,  0.5263,  0.0000,  0.0000]],
+
+         [[ 0.6904,  0.4648, -2.6100,  ...,  0.8882, -1.1738,  0.3114]],
+
+         [[ 0.0000,  1.3700,  1.0858,  ..., -0.0000,  0.9629, -1.7594]],
+
+         ...,
+
+         [[ 1.1284, -1.0111, -0.2680,  ...,  1.5557,  0.6368, -3.7287]],
+
+         [[ 1.5921,  1.7912, -2.5070,  ...,  0.1805,  0.2622, -0.5611]],
+
+         [[ 0.2763,  0.2941, -0.6107,  ...,  1.4807,  1.1788, -0.5737]]],
+
+
+        [[[ 0.6166,  0.8541,  0.7181,  ...,  0.4710,  2.0595, -0.0000]],
+
+         [[ 1.1835,  1.4409, -1.0423,  ...,  1.4440,  0.1274, -0.0000]],
+
+         [[ 0.9082, -0.0854,  0.4442,  ...,  0.0000,  0.0498, -1.3537]],
+
+         ...,
+
+         [[ 0.0000,  0.3736,  0.2154,  ..., -0.0000,  0.7949, -1.0925]],
+
+         [[ 1.1750, -0.7650, -0.0000,  ...,  1.3535,  0.5130, -2.4831]],
+
+         [[ 2.3922,  0.4705,  0.1604,  ...,  0.3074, -0.6237, -0.0000]]]],
+       device='cuda:0', grad_fn=<GatherBackward0>)
+2405.8564453125
+tensor([[[[ 0.9387, -1.0222,  0.3428,  ...,  1.1886, -0.1166, -0.9619]],
+
+         [[ 0.4806, -1.1240,  0.1478,  ...,  1.0069,  0.4962, -2.9599]],
+
+         [[ 0.8267, -1.0975,  3.4028,  ...,  0.6567,  1.2695, -1.2914]],
+
+         ...,
+
+         [[ 1.2952,  0.3475,  0.5910,  ...,  1.0264,  0.7150, -2.6870]],
+
+         [[ 1.4986,  0.0822,  1.9800,  ...,  2.0034,  1.3666, -0.0000]],
+
+         [[ 1.4522,  0.4702, -0.5770,  ...,  0.6595, -0.0000, -0.2428]]],
+
+
+        [[[ 1.7615,  1.1858, -0.5396,  ...,  1.9603,  0.3146, -3.3946]],
+
+         [[ 1.9538,  0.4307, -0.2434,  ...,  0.0000, -0.0670, -1.8357]],
+
+         [[ 2.6414,  1.0953, -0.3300,  ...,  0.7724,  0.3358,  0.3190]],
+
+         ...,
+
+         [[ 0.0000,  0.0066,  1.7409,  ...,  0.3321,  1.2821, -3.0091]],
+
+         [[ 1.5091,  1.3142,  0.8425,  ...,  0.5940,  1.0855, -1.8222]],
+
+         [[ 2.6899, -1.8737,  0.5268,  ..., -0.0000,  1.7695, -0.3674]]],
+
+
+        [[[ 0.0000,  1.3112,  0.1092,  ...,  1.7124,  0.0000,  0.3886]],
+
+         [[ 0.0000,  0.0000, -1.0753,  ...,  0.7378, -0.6334, -1.1307]],
+
+         [[ 0.4976, -0.0000,  0.0000,  ...,  0.0164, -0.5728, -2.1746]],
+
+         ...,
+
+         [[ 2.0914, -0.0000, -0.8250,  ...,  1.2353, -0.9210, -1.4811]],
+
+         [[ 1.0274, -0.3544,  0.2222,  ..., -1.0699, -0.1823, -2.6772]],
+
+         [[ 0.6600, -0.6200, -0.0000,  ...,  0.7218,  0.2646, -1.7289]]]],
+       device='cuda:0', grad_fn=<GatherBackward0>)
+2395.683349609375
+tensor([[[[-0.2358, -0.3177, -0.0000,  ...,  2.0717, -0.0000, -0.0067]],
+
+         [[ 2.4687,  0.9950, -0.2163,  ...,  0.1419, -0.8200, -0.0000]],
+
+         [[ 0.0000, -0.6489,  0.8709,  ...,  0.0000,  1.7420, -0.0924]],
+
+         ...,
+
+         [[ 3.1112,  0.3684, -0.0363,  ...,  0.0000,  1.1901, -1.5708]],
+
+         [[ 1.9051,  1.8262, -0.0821,  ...,  0.6529,  0.8873, -0.0000]],
+
+         [[ 1.1058,  1.2903,  0.8240,  ...,  1.4091,  0.0000, -0.3061]]]],
+       device='cuda:0', grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:11,259 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:11,491 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:11,492 - root - INFO - Epoch: 1
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:11,762 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:11,992 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:11,993 - root - INFO - Epoch: 2
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:12,264 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:12,499 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:12,500 - root - INFO - Epoch: 3
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:12,772 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:12,992 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:12,993 - root - INFO - Epoch: 4
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:13,263 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:13,487 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:13,488 - root - INFO - Epoch: 5
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:13,758 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:13,988 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:13,989 - root - INFO - Epoch: 6
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:14,266 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:14,497 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:14,499 - root - INFO - Epoch: 7
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<GatherBackward0>)
+nan
+2024-03-18 00:10:14,776 - root - INFO - TRAIN LOSS : nan
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         ...,
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0')
+nan
+2024-03-18 00:10:15,003 - root - INFO - VALID LOSS : nan
+2024-03-18 00:10:15,004 - root - INFO - Early Stopping at 8'th epoch
+2024-03-18 00:10:15,004 - root - INFO - Best Weight Confirmed : 0'th epoch
