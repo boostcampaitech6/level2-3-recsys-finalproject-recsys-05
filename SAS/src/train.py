@@ -129,15 +129,19 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
             wandb.log(dict(train_loss_epoch=train_loss,
                             valid_loss_epoch=valid_loss))
 
-        if valid_loss < best_loss - 0.005:
+        if valid_loss < best_loss:
             logger.info("Best model updated LOSS from %.4f to %.4f", best_loss, valid_loss)
             best_loss, best_epoch = valid_loss, epoch
 
             if dist.get_rank() == 0:
                 save_model(model, cfg, epoch, valid_loss)
             
-            ### early stopping
-            cur_step = 0
+            if valid_loss < patience - 0.008:
+                patience = best_loss
+                cur_step = 0
+            else:
+                cur_step += 1
+
         else:
             cur_step += 1
             if cur_step > cfg['max_steps']:
