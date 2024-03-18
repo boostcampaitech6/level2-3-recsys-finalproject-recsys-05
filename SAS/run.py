@@ -29,7 +29,6 @@ def main(cfg: CFG):
 
     train_loader, valid_loader = get_dataloader(cfg, dataset)
 
-    # model = SASModel(cfg).to(cfg['device'])
     model = SASModel(cfg).cuda(cfg['local_rank'])
     model = DDP(module=model,
                 device_ids=[cfg['local_rank']])

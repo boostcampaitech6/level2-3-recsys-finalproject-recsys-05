@@ -65,6 +65,7 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
         model.eval()
         torch.set_grad_enabled(False)
 
+    prev_output = None
     total_loss = 0
     for cate, cont, pos in tqdm(data_loader):
         cate, cont, pos = cate.to(device), cont.to(device), pos.to(device)
@@ -74,12 +75,22 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
         
         output = model(cate, cont, pos)
         
-        loss = loss_fun(output) 
+        if prev_output is None:
+                prev_output = output.detach()
+                continue
+        
+        if output.size(0) != prev_output.size(0):
+            # print(f"Skipping loss calculation due to size mismatch.")
+            prev_output = output.detach()
+            continue
+
+        loss = loss_fun(output, prev_output) 
 
         if is_train:
             loss.backward()
-            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             optimizer.step()
+            
+        prev_output = output.detach()
 
         total_loss += loss.item()
     
@@ -109,7 +120,7 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
     for epoch in range(cfg['n_epochs']):
         logger.info("Epoch: %s", epoch)
         # TRAIN
-        train_loss = get_loss(data_loader=train_loader, model=model, optimizer=optimizer, loss_fun=loss_fun, device = cfg['device'], is_train=True)
+        train_loss = get_loss(model=model, data_loader=train_loader, optimizer=optimizer, loss_fun=loss_fun, device = cfg['device'], is_train=True)
     
         # VALID
         valid_loss = get_loss(model=model, data_loader=valid_loader, loss_fun=loss_fun, device = cfg['device'], is_train=False)
