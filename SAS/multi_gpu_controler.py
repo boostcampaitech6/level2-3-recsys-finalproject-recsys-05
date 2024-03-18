@@ -48,6 +48,8 @@ def start():
         source venv/SAS/bin/activate;
         cd level2-3-recsys-finalproject-recsys-05;
         git checkout SAS;
+        git fetch;
+        git reset --hard origin/SAS;
         git pull;
         cd SAS;
         nohup torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
@@ -60,7 +62,7 @@ def start():
 
     command = f"torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank=0 --master_addr=10.0.2.7 --master_port=20000 \
             run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} --batch_size={args.batch_size} \
-            --n_head={args.n_head} > nohup.out 2>&1 &"
+            --n_head={args.n_head} &"
 
     output = subprocess.run(command, shell=True, capture_output=True, text=True)
     print(f"Output for bgw-server: {output}")
