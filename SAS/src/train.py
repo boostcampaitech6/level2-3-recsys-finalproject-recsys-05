@@ -78,9 +78,9 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
 
         if is_train:
             loss.backward()
+            # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             optimizer.step()
 
-        print(loss.item())
         total_loss += loss.item()
     
     average_loss = total_loss / len(data_loader)

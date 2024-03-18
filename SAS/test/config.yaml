@@ -3,12 +3,12 @@
 
 "wandb_project_name": "sas"
 "tier" : "diamond"
-"data_dir": "~/data2/test"
+"data_dir": "~/SAS/shared/"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 
 "max_steps" : 7
-"n_epochs" : 300
+"n_epochs" : 10
 "num_workers" : 6
 "max_seq_len" : 10
 
