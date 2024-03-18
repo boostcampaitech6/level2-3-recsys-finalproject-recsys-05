@@ -116,7 +116,7 @@ def save_model(model, cfg, epoch, metric):
 
 def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, optimizer: torch.optim.Optimizer, loss_fun: nn.Module, cfg):
     logger.info(f"Training Started : n_epochs={cfg['n_epochs']}")
-    best_loss, best_epoch, cur_step = 99999, -1, 0
+    best_loss, patience, best_epoch, cur_step = 99999, 99999, -1, 0
     for epoch in range(cfg['n_epochs']):
         logger.info("Epoch: %s", epoch)
         # TRAIN
