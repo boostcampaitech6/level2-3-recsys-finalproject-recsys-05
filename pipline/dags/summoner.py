@@ -25,13 +25,15 @@ default_args = {
 
 async def get_summoner(session, credentials):
     headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"}
-    tier = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"]
+    tier = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND"]
     division = ["I", "II", "III", "IV"]
     page_num = 1
     tier_num = 0
     division_num = 0
-    api_key = 'RGAPI-13554f38-e55d-4779-b611-9314ca067f71'
+    api_key = 'RGAPI-a6b8bedc-c93d-431c-b3db-89283044a408' # 추후 보안을 위해 json파일로 변경하기
     cnt = 0
+    df = pd.DataFrame()
+    
     # Service account JSON key file path
     key_file_path = "/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/teemo-415918-414755ce7c80.json"
 
@@ -41,7 +43,7 @@ async def get_summoner(session, credentials):
     
     project_id = credential.project_id
     dataset_id = "summoner_dataset"
-    table_id = "summoner_entries_table"
+    table_id = "summoner_info"
 
     while True:
         url = f"https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/{tier[tier_num]}/{division[division_num]}?page={page_num}&api_key={api_key}"
@@ -50,11 +52,12 @@ async def get_summoner(session, credentials):
                 try:
                     content = await response.json()
                     cnt += 1
-                    if len(content) != 205:
+                    if len(content) == 0:
                         page_num = 1
-                        if tier_num == len(tier) and division_num == len(division):
+                        if tier[tier_num] == tier[-1] and division[division_num] == division[-1]:
+                            gbq.to_gbq(df, destination_table= f"{dataset_id}.{table_id}", credentials=credentials, project_id=project_id, if_exists="append")
                             break
-                        if division_num == len(division):
+                        if division[division_num] == division[-1]:
                             division_num = 0
                             tier_num += 1
                         else:
@@ -78,8 +81,12 @@ async def get_summoner(session, credentials):
                             "losses": losses_list
                             }
                         
-                        df = pd.DataFrame(data)
-                        gbq.to_gbq(df, destination_table= f"{dataset_id}.{table_id}", credentials=credentials, project_id=project_id, if_exists="append")
+                        df_new = pd.DataFrame(data)
+                        df = pd.concat([df, df_new], ignore_index=True)
+                        
+                        if len(df) >= 100000:
+                            gbq.to_gbq(df, destination_table= f"{dataset_id}.{table_id}", credentials=credentials, project_id=project_id, if_exists="append")
+                            df = pd.DataFrame()
                         print(f"tier: {tier[tier_num]}, division: {division[division_num]}, page_num: {page_num}")
                         page_num += 1
                         
@@ -94,6 +101,7 @@ async def get_summoner(session, credentials):
                 await asyncio.sleep(5)
             else:
                 response.raise_for_status()
+                await asyncio.sleep(5)
 
 async def main(credentials):
     async with aiohttp.ClientSession() as session:
