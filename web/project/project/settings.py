@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "users",
+    "rest_framework",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "project.middleware.user_activity_logger.UserActivityLoggerMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -172,3 +175,12 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 AUTH_USER_MODEL = "users.AppUser"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
