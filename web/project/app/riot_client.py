@@ -30,6 +30,13 @@ class RiotClient:
         response = requests.get(url, headers={"X-Riot-Token": self.api_key})
         return response
 
+    def get_summoner_by_encrypted_summoner_id(
+        self, encrypted_summoner_id: str
+    ) -> requests.Response:
+        url = f"{KR_API_HOST}/lol/summoner/v4/summoners/{encrypted_summoner_id}"
+        response = requests.get(url, headers={"X-Riot-Token": self.api_key})
+        return response
+
 
 client = RiotClient()
 

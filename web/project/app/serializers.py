@@ -1,6 +1,7 @@
 from app.models import Summoner, LeagueEntry
 from rest_framework import serializers
 
+
 class SummonerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Summoner

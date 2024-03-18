@@ -28,7 +28,7 @@ ENV = os.getenv("ENV", "development")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENV == "production":
-    DEBUG = True
+    DEBUG = False
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SESSION_COOKIE_SECURE = True
@@ -177,8 +177,8 @@ environ.Env.read_env(BASE_DIR / ".env")
 AUTH_USER_MODEL = "users.AppUser"
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 INTERNAL_IPS = [

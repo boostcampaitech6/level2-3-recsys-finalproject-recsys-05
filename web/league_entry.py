@@ -15,15 +15,15 @@ class LeagueEntryCrawler:
         self.api_key = os.environ.get("RIOT_API_KEY")
         self.tiers = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"]
         self.divisions = ["I", "II", "III", "IV"]
-        
+
         self.db_user = os.environ.get("POSTGRES_USER")
         self.db_password = os.environ.get("POSTGRES_PASSWORD")
         self.db_host = "localhost"
         self.db_port = os.environ.get("POSTGRES_PORT")
         self.db_name = os.environ.get("POSTGRES_WEB_DB")
-        
+
         self.pool = None
-    
+
     async def create_db_pool(self):
         self.pool = await asyncpg.create_pool(
             user=self.db_user,
@@ -31,7 +31,7 @@ class LeagueEntryCrawler:
             host=self.db_host,
             port=self.db_port,
             database=self.db_name,
-        )            
+        )
 
     async def run(self):
         await self.create_db_pool()
@@ -50,7 +50,9 @@ class LeagueEntryCrawler:
         league_entries = await self._fetch(url + f"&page={page}")
 
         while league_entries:
-            print(f"Fetching {tier} {division} page {page}... entries: {len(league_entries)}")
+            print(
+                f"Fetching {tier} {division} page {page}... entries: {len(league_entries)}"
+            )
             summoners = [
                 (
                     league_entry["summonerId"],
@@ -58,10 +60,9 @@ class LeagueEntryCrawler:
                     datetime.datetime.now(),
                     datetime.datetime.now(),
                 )
-                for league_entry 
-                in league_entries
+                for league_entry in league_entries
             ]
-            
+
             async with self.pool.acquire() as connection:
                 async with connection.transaction():
                     await connection.executemany(
@@ -93,8 +94,7 @@ class LeagueEntryCrawler:
                     datetime.datetime.now(),
                     datetime.datetime.now(),
                 )
-                for league_entry 
-                in league_entries
+                for league_entry in league_entries
             ]
             async with self.pool.acquire() as connection:
                 async with connection.transaction():
@@ -123,7 +123,7 @@ class LeagueEntryCrawler:
 
             page += 1
             league_entries = await self._fetch(url + f"&page={page}")
-            
+
         return []
 
     async def _fetch(self, url: str) -> list:
