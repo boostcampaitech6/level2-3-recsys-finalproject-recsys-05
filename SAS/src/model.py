@@ -25,7 +25,6 @@ class MultiHeadAttention(nn.Module):
         
         pos_idx = position.unsqueeze(-1).unsqueeze(-1).expand(-1, -1, 1, self.d_feat)
         input_Q = torch.gather(input, 2, pos_idx)
-        print(input_Q)
 
         Q = self.lin_Q(input_Q)
         K = self.lin_K(input)

@@ -7,7 +7,7 @@ from src.util import CFG, parse_args, init_for_distributed
 from src.dataset import SASDataset
 from src.model import SASModel
 from src.train import run, get_dataloader
-from src.loss import STD_loss
+from src.loss import CosLoss
 from src.util import get_logger, logging_conf
 import wandb
 
@@ -37,11 +37,13 @@ def main(cfg: CFG):
     logger.info("## model loaded ")
 
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg['lr'])
-    loss_fun = STD_loss()
+    loss_fun = CosLoss()
 
     run(model, train_loader, valid_loader, optimizer, loss_fun, cfg)
 
 if __name__ == '__main__':
+    torch.cuda.empty_cache()
+
     args = parse_args()
     cfg = CFG('config.yaml')
 
@@ -51,5 +53,3 @@ if __name__ == '__main__':
 
     init_for_distributed(cfg)
     main(cfg)
-    
-    torch.cuda.empty_cache()

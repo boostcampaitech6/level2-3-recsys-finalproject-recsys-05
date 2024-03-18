@@ -17,7 +17,7 @@ def parse_args():
     return parser.parse_args()
 
 # 원격 서버 접속 정보
-# workers = ["ngo-server", "lsg-server", "jsj-server"]
+workers = ["ngo-server", "lsg-server", "jsj-server"]
 workers = []
 
 
@@ -30,7 +30,7 @@ def connect_and_execute(server, commands, copy=False):
             with SCPClient(ssh.get_transport()) as scp:
                 # 필요한 작업 수행...
                 if copy:
-                    scp.put('../../../data/', recursive=True, remote_path='gpu-cluster/')
+                    scp.put('~/SAS/shared_data/', recursive=True, remote_path='~/SAS/')
 
                 stdin, stdout, stderr = ssh.exec_command(commands)
                 # 결과 처리...
@@ -41,12 +41,13 @@ def connect_and_execute(server, commands, copy=False):
 def start():
     for i, worker in enumerate(workers, start=1):
         commands = f"""
-        cd gpu-cluster;
-        source multi-gpu/bin/activate;
+        cd SAS;
+        source venv/SAS/bin/activate;
         cd level2-3-recsys-finalproject-recsys-05;
-        git checkout cossim;
+        git checkout SAS;
         git pull;
-        cd SE;
+        cd SAS;
+        pip install -r requirements.txt;
         nohup torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
         run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} > nohup.out 2>&1 &
         """
