@@ -8,9 +8,9 @@ parameters:
   batch_size :
     values: [64, 128, 256]
   hidden_size :
-    values: [64, 128, 256]
+    values: [16, 32, 64, 128, 256]
   emb_size :
-    values: [64, 128, 256]
+    values: [16, 32, 64, 128, 256]
   n_head :
     values: [2, 4, 8]
   dropout:
