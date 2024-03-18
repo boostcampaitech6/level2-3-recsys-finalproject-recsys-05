@@ -21,6 +21,7 @@ urlpatterns = [
         "summoners/search/", search_summoners_by_name, name="search-summoners-by-name"
     ),
     path("profile/summoner", save_summoner, name="save-summoner-info"),
+    path("accounts/", include("allauth.urls")),
 ]
 
 if settings.DEBUG:
