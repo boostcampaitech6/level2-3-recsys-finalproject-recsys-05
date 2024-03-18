@@ -3,7 +3,7 @@
 
 "wandb_project_name": "sas"
 "tier" : "diamond"
-"data_dir": "~/SAS/shared/"
+"data_dir": "~/SAS/shared_data/"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 

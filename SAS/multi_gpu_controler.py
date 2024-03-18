@@ -9,7 +9,7 @@ import subprocess
 def parse_args():
     # 입력 인자 처리
     parser = argparse.ArgumentParser()
-    parser.add_argument("--start", type=bool, default=True)
+    parser.add_argument("--stop", action='store_true', default=False)
     parser.add_argument("--hidden_size", type=int, default=64)
     parser.add_argument("--emb_size", type=int, default=32)
     parser.add_argument("--dropout", type=float, default=0.2)
@@ -18,7 +18,7 @@ def parse_args():
 
 # 원격 서버 접속 정보
 workers = ["ngo-server", "lsg-server", "jsj-server"]
-workers = []
+# workers = []
 
 
 def connect_and_execute(server, commands, copy=False):
@@ -30,12 +30,13 @@ def connect_and_execute(server, commands, copy=False):
             with SCPClient(ssh.get_transport()) as scp:
                 # 필요한 작업 수행...
                 if copy:
-                    scp.put('~/SAS/shared_data/', recursive=True, remote_path='~/SAS/')
+                    scp.put('../../shared_data/', recursive=True, remote_path='~/SAS/')
 
                 stdin, stdout, stderr = ssh.exec_command(commands)
-                # 결과 처리...
         except paramiko.ssh_exception.NoValidConnectionsError as e:
             print(f"Connection failed for {server}: {e}")
+        
+        return stdout.read().decode('utf-8')
 
 
 def start():
@@ -47,18 +48,18 @@ def start():
         git checkout SAS;
         git pull;
         cd SAS;
-        pip install -r requirements.txt;
         nohup torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
         run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr} > nohup.out 2>&1 &
         """
-        connect_and_execute(worker, commands, copy=True)
+        output = connect_and_execute(worker, commands, copy=True)
+        # print(f"Output for {worker}: {output}")
 
 
     command = f"torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank=0 --master_addr=10.0.2.7 --master_port=20000 \
         run.py --hidden_size={args.hidden_size} --emb_size={args.emb_size} --dropout={args.dropout} --lr={args.lr}"
 
-    subprocess.run(command, shell=True, capture_output=True, text=True)
-
+    output = subprocess.run(command, shell=True, capture_output=True, text=True)
+    print(f"Output for bgw-server: {output}")
 
 def stop():
     time.sleep(10)
@@ -79,8 +80,12 @@ def stop():
 
 if __name__ == "__main__":
     args = parse_args()
-    if args.start:
+    
+    if not args.stop:
+        print("start")
         start()
+        print("stop")
         stop()
     else:
+        print("stop")
         stop()
