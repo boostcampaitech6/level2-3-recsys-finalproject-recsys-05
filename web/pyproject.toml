@@ -21,6 +21,7 @@ markdown = "^3.5.2"
 django-filter = "^24.1"
 djangorestframework = "^3.14.0"
 django-debug-toolbar = "^4.3.0"
+django-allauth = "^0.61.1"
 
 
 [build-system]

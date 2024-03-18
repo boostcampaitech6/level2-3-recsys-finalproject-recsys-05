@@ -55,7 +55,14 @@ INSTALLED_APPS = [
     "users",
     "rest_framework",
     "debug_toolbar",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.discord",
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -67,6 +74,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "project.middleware.user_activity_logger.UserActivityLoggerMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 ROOT_URLCONF = "project.urls"
@@ -91,6 +104,9 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "environment": "jinja2conf.environment",
+            "context_processors": [
+                "django.template.context_processors.request",
+            ],
         },
     },
 ]
@@ -184,3 +200,15 @@ REST_FRAMEWORK = {
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    "discord": {
+        "APP": {
+            "client_id": env("DISCORD_CLIENT_ID"),
+            "secret": env("DISCORD_CLIENT_SECRET"),
+            "key": "",
+        }
+    }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
