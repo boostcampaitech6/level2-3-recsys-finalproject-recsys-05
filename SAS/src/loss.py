@@ -28,11 +28,31 @@ def batch_cosine_similarity(embeddings):
     return cos_sim
 
 
+class CosLoss2(nn.Module):
+    def __init__(self):
+        super(CosLoss2, self).__init__()
+
+    def forward(self, input):
+        # for i in range(input.size(0)):
+        #     for j in range(1, input.size(1)):
+        #         total_loss = 1 - torch.abs(F.cosine_similarity(input[i, 0], input[i, j]))
+
+        # loss = total_loss / (input.size(0) * input.size(1))
+
+        anchor = input[:, 0].unsqueeze(1)
+        comparisons = input[:, 1:] 
+        cos_sim = F.cosine_similarity(anchor, comparisons, dim=2)
+
+        total_loss = torch.mean(1 - torch.abs(cos_sim))
+
+        return total_loss
+    
+
 class CosLoss(nn.Module):
     def __init__(self):
         super(CosLoss, self).__init__()
 
-    def forward(self, input):
+    def forward(self, input, prev_input):
         cos_sim = batch_cosine_similarity(input)
 
         # 자기 자신과의 유사도 제외
@@ -40,8 +60,17 @@ class CosLoss(nn.Module):
         cos_sim = cos_sim * (1. - eye)
 
         # 평균 손실 계산
-        loss = (1 - cos_sim).sum() / (cos_sim.size(0) * cos_sim.size(1) * (cos_sim.size(2) - 1))
-        return loss
+        pos_loss = (1 - cos_sim).mean()
+
+        cos_similarities = torch.zeros(prev_input.size(0), prev_input.size(1))
+        for i in range(input.size(1)):  # sequence 차원에 대해 반복
+            cos_sim2 = F.cosine_similarity(input[:, i, :], prev_input[:, i, :], dim=1)
+            cos_similarities[:, i] = cos_sim2
+
+        # 결과 출력
+        neg_loss = cos_similarities.mean()
+
+        return (pos_loss + neg_loss) / 2
     
 
 ### 위험!!!! loss가 0이 됩니다.
