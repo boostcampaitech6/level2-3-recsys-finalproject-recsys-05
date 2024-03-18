@@ -30,7 +30,11 @@ async def get_summoner(session, credentials):
     page_num = 1
     tier_num = 0
     division_num = 0
-    api_key = 'RGAPI-a6b8bedc-c93d-431c-b3db-89283044a408' # 추후 보안을 위해 json파일로 변경하기
+    
+    with open("/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/riot_api.json") as f:
+        riot_key = json.load(f)
+        
+    api_key = riot_key["key"]
     cnt = 0
     df = pd.DataFrame()
     
