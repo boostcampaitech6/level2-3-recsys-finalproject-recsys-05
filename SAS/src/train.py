@@ -129,7 +129,7 @@ def run(model: nn.Module, train_loader: DataLoader, valid_loader: DataLoader, op
             wandb.log(dict(train_loss_epoch=train_loss,
                             valid_loss_epoch=valid_loss))
 
-        if valid_loss < best_loss - 0.001:
+        if valid_loss < best_loss - 0.005:
             logger.info("Best model updated LOSS from %.4f to %.4f", best_loss, valid_loss)
             best_loss, best_epoch = valid_loss, epoch
 
