@@ -87,6 +87,7 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, help="")
     parser.add_argument("--emb_size", type=int, help="")
     parser.add_argument("--hidden_size", type=int, help="")
+    parser.add_argument("--n_head", type=int, help="")
     parser.add_argument("--n_epochs", type=int, help="")
     parser.add_argument("--lr", type=float, help="")
     parser.add_argument("--dropout", type=float, help="")
