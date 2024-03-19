@@ -110,7 +110,7 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
 def save_model(model, cfg, epoch, metric):
     os.makedirs(cfg['model_dir'], exist_ok=True)
     now = datetime.now().strftime("%Y_%m_%d_%H_%M")
-    torch.save(obj= {"model": model.state_dict(), "epoch": epoch + 1},
+    torch.save(obj= {"model": model.state_dict(), "epoch": epoch + 1, "cfg": cfg},
             f=os.path.join(cfg['model_dir'], f"{metric:.2%}_{now}.pt"))
 
 
