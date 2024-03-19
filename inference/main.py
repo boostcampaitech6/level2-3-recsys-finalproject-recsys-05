@@ -2,17 +2,21 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from loguru import logger
 
-from config import config
-from load_model import load_model
+from config import get_config, Config
 from api import router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting app")
     # Load model from model.py
-    logger.info("Loading model")
-    load_model(config.model_path)
-    yield
+    try:
+        logger.info("Model loaded")
+        # 모델 대신 matrix check
+        yield
+    except Exception as e:
+        logger.exception("Error during startup")
+        raise
+
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(router)
