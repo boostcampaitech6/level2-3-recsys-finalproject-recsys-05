@@ -9,6 +9,8 @@ from .views import (
     riot_txt,
     search_summoners_by_name,
     save_summoner,
+    terms_of_service,
+    privacy_policy,
 )
 
 urlpatterns = [
@@ -22,6 +24,8 @@ urlpatterns = [
     ),
     path("profile/summoner", save_summoner, name="save-summoner-info"),
     path("accounts/", include("allauth.urls")),
+    path("terms_of_service", terms_of_service, name="terms-of-service"),
+    path("privacy_policy", privacy_policy, name="privacy-policy"),
 ]
 
 if settings.DEBUG:

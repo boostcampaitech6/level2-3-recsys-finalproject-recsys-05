@@ -169,3 +169,11 @@ def save_summoner(request: WSGIRequest):
         },
         safe=False,
     )
+
+
+def terms_of_service(request: WSGIRequest):
+    return render(request, "terms_of_service.html")
+
+
+def privacy_policy(request: WSGIRequest):
+    return render(request, "privacy_policy.html")
