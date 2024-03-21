@@ -39,7 +39,6 @@
 - 'rune_1'
 - 'spell_0'
 - 'spell_1'
-### match_by_summoner의 result는 학습에 사용됨, match_by_match의 result가 target으로 사용
 - 'result'
 
 "cont_cols" :
