@@ -45,7 +45,16 @@
       document.getElementById('start').classList.add('hidden');
       document.getElementById('loading').classList.remove('hidden');
       setTimeout(() => {
-        window.location.href = "{{ url('recommend-result') }}";
+        fetch(`/recommend/inference`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        window.location.href = "{{ url('get-duo-match') }}?duo_match_id=" + data.duo_match_id;
+      });        
       }, 1000);
     });
   </script>

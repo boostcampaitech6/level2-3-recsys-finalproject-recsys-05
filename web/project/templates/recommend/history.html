@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+{% block title %}
+  | AI Recommend History
+{% endblock title %}
+{% block content %}
+  <div class="flex justify-center items-center mt-16 flex-col">
+    <div class="block max-w-2xl p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+      <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">AI 추천 기록</h1>
+      {% if not duo_matches %}
+        <div class="mt-4">
+          <p class="text-center text-gray-600 dark:text-gray-300">You have not used the AI Recommend feature yet.</p>
+        </div>
+      {% endif %}
+
+      <div class="mt-6">
+        <a href="{{ url('recommend-ai') }}" class="block w-full px-4 py-2 text-center text-white bg-stone-500 rounded-md hover:bg-stone-600 dark:bg-stone-600 dark:hover:bg-stone-700">
+          ✨ AI 듀오 추천 시작하기 ✨
+        </a>
+      </div>
+
+      {% for duo_match in duo_matches %}
+        <div class="mt-6">
+          <div class="flex justify-between items-center">
+            <img class="h-12 w-12 rounded-full"
+                width="12"
+                height="12"
+                src="https://ddragon.leagueoflegends.com/cdn/14.4.1/img/profileicon/{{ duo_match['target_profile_icon_id'] }}.png"
+                alt="">
+            <div class="flex-col min-w-64">
+              <div class="flex items-center">
+                <p class="inline-flex text-lg font-bold ml-2 text-gray-800 dark:text-gray-300">{{ duo_match["target_username"] }}</p>
+                <p class="inline-flex ml-2 text-gray-600 dark:text-gray-300">{{ duo_match["target_summoner_tier"] }} {{ duo_match["target_summoner_rank"] }}</p>
+              </div>
+              <p class="ml-2 text-gray-600 dark:text-gray-300">{{ duo_match["n_days_ago"] }}</p>
+            </div>
+            <button class="mr-1 inline-flex items-center justify-center px-4 py-2 leading-none border rounded transition-colors text-white bg-white border-blue-500 hover:bg-blue-500 hover:text-white lg:mt-0">
+              👍
+            </button>
+            <button class="mr-1 inline-flex items-center justify-center px-4 py-2 leading-none border rounded transition-colors text-white bg-white border-red-500 hover:bg-red-500 hover:text-white lg:mt-0">
+              👎
+            </button>
+            <a href="{{ url('get-duo-match') }}?duo_match_id={{ duo_match['id'] }}">
+              <button class="inline-flex items-center justify-center px-4 py-2 leading-none border rounded transition-colors text-stone-500 bg-white border-stone-500 hover:bg-stone-500 hover:text-white lg:mt-0">
+                🔍 상세
+              </button>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+      
+    </div>
+  </div>
+{% endblock content %}
+{% block js %}
+  <script>
+    
+  </script>
+{% endblock js %}

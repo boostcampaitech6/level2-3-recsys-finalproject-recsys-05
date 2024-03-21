@@ -28,7 +28,7 @@
         <nav class="flex items-center justify-between flex-wrap bg-stone-500 p-6">
           <div class="flex items-center flex-shrink-0 text-white mr-6"
                onclick="home()">
-            <span class="font-semibold text-xl tracking-tight">DUO FINDER</span>
+            <span class="font-semibold text-xl tracking-tight cursor-pointer">DUO FINDER</span>
           </div>
           <div class="block lg:hidden">
             <button class="flex items-center px-3 py-2 border rounded text-stone-200 border-stone-400 hover:text-white hover:border-white">
@@ -44,9 +44,7 @@
             <div class="text-sm lg:flex-grow">
               <a href="{{ url('recommend-ai') }}"
                  class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">추천 AI</a>
-              <a href="#responsive-header"
-                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">내 대시보드</a>
-              <a href="#responsive-header"
+              <a href="{{ url('get-duo-match-history') }}"
                  class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white">매칭 기록</a>
             </div>
             <div>
