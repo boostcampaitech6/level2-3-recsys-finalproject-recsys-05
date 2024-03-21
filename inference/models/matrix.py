@@ -67,8 +67,8 @@ def champion_id_indexing():
     with open('/Users/seoku/workspace/naver_boost/duofinder/inference/models/champion_name_key.json', 'r') as f:
         champion_name_key = json.load(f)
 
-    index2name = {v: k for k, v in enumerate(champion_name_key.keys())}
-    name2idx = {k: v for k, v in enumerate(champion_name_key.keys())}
+    index2name = {k: i for i, k in enumerate(champion_name_key.keys())}
+    name2idx = {i: k for i, k in enumerate(champion_name_key.keys())}
 
     # save index2name, name2idx
     with open('index2name.json', 'w') as f:
