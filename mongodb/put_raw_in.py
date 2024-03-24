@@ -2,14 +2,6 @@ from pymongo import MongoClient
 from tqdm import tqdm
 import orjson
 import os
-import gc  # 가비지 컬렉션 모듈 추가
-import resource
-
-# soft limit와 hard limit 설정 (단위: 바이트)
-soft, hard = 1024 ** 3, (1024 ** 3) * 2  # 100MB, 200MB
-
-resource.setrlimit(resource.RLIMIT_AS, (soft, hard))
-
 
 
 def parse_args():
@@ -27,7 +19,6 @@ def parse_args():
 
 def put_match_data(collection_match, dump):
     collection_match.insert_many(dump)
-    gc.collect()  # 데이터 삽입 후 가비지 컬렉션을 수동으로 실행
 
 
 def collect_data(collection_match, json_data_gen):
