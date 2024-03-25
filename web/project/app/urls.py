@@ -32,7 +32,6 @@ urlpatterns = [
     path("match/duo/history", get_duo_match_history, name="get-duo-match-history"),
     path("tos", terms_of_service, name="terms-of-service"),
     path("privacy", privacy_policy, name="privacy-policy"),
-    
 ]
 
 if settings.DEBUG:

@@ -74,7 +74,9 @@ class LeagueEntry(models.Model):
 
 
 class DuoMatch(models.Model):
-    id = models.CharField(max_length=36, blank=False, null=False, primary_key=True, default=uuid.uuid4)
+    id = models.CharField(
+        max_length=36, blank=False, null=False, primary_key=True, default=uuid.uuid4
+    )
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user1")
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user2")
     created_at = models.DateTimeField(auto_now_add=True)

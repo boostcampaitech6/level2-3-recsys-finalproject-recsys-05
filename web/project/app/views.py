@@ -185,9 +185,9 @@ def inference(request: WSGIRequest):
     me = request.user
 
     # Fake User
-    
+
     user = AppUser.objects.get(id=2)
-    
+
     result = DuoMatch.objects.create(user1=me, user2=user)
     result.save()
 
@@ -200,20 +200,21 @@ def inference(request: WSGIRequest):
         safe=False,
     )
 
+
 def get_duo_match(request: WSGIRequest):
     duo_match_id = request.GET.get("duo_match_id")
-    
+
     if not duo_match_id:
         return JsonResponse({"error": "duo_match_id is required"}, status=400)
-    
+
     duo_match = DuoMatch.objects.get(id=duo_match_id)
-    
+
     summoner2: Summoner = duo_match.user2.summoner
-    
+
     summoner2_rank = LeagueEntry.objects.get(summoner=summoner2)
-    
+
     return render(
-        request, 
+        request,
         "recommend/duo_match.html",
         {
             "user": request.user,
@@ -223,21 +224,22 @@ def get_duo_match(request: WSGIRequest):
         },
     )
 
+
 def _n_days_ago(target_date: datetime.datetime):
     timezone = datetime.timezone(datetime.timedelta(hours=9))
     today = datetime.datetime.now().astimezone(timezone)
-    
+
     diff = today - target_date.astimezone(timezone)
-    
+
     if diff.days == 0 and diff.seconds < 3600:
         return f"{diff.seconds // 60}분 전"
-    
+
     if diff.days == 0:
         return f"{diff.seconds // 3600}시간 전"
-    
+
     if diff.days < 7:
         return f"{diff.days}일 전"
-    
+
     return f"{diff.days}일 전"
 
 
@@ -245,21 +247,25 @@ def _n_days_ago(target_date: datetime.datetime):
 def get_duo_match_history(request: WSGIRequest):
     me = request.user
     timezone = datetime.timezone(datetime.timedelta(hours=9))
-    today = datetime.datetime.now().astimezone(timezone)
 
     duo_matches = [
         {
             "id": duo_match.id,
             "target_username": duo_match.user2.summoner.name,
-            "target_profile_icon_id": duo_match.user2.summoner.profile_icon_id, 
-            "target_summoner_tier": LeagueEntry.objects.get(summoner=duo_match.user2.summoner).tier,
-            "target_summoner_rank": LeagueEntry.objects.get(summoner=duo_match.user2.summoner).rank,
-            "created_at": duo_match.created_at.astimezone(timezone).strftime("%Y-%m-%d %H:%M:%S"),
+            "target_profile_icon_id": duo_match.user2.summoner.profile_icon_id,
+            "target_summoner_tier": LeagueEntry.objects.get(
+                summoner=duo_match.user2.summoner
+            ).tier,
+            "target_summoner_rank": LeagueEntry.objects.get(
+                summoner=duo_match.user2.summoner
+            ).rank,
+            "created_at": duo_match.created_at.astimezone(timezone).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
             "n_days_ago": _n_days_ago(duo_match.created_at),
         }
         for duo_match in DuoMatch.objects.filter(user1=me).order_by("-created_at")
     ]
-    
 
     return render(
         request,
