@@ -31,10 +31,10 @@ async def main(args):
     client = MongoClient("mongodb://localhost:27017/")
     mongo = MongoDBController(client, batch_size)
 
-    cate_to_index = mongo.get_cate_to_index(cate_to_index_dict)
+    cate_to_index = mongo.get_cate_to_index('riot_match_modv1', cate_to_index_dict)
 
     dump = []
-    cursor = mongo['riot_match'].find({}, except_cols, batch_size=batch_size)
+    cursor = mongo['riot_match_modv1'].find({}, except_cols, batch_size=batch_size)
     for doc in tqdm(cursor):
         for col in cate_cols:
             doc[col] = cate_to_index[col][doc[col]]
@@ -42,8 +42,11 @@ async def main(args):
         dump.append(doc)
 
         if len(dump) >= batch_size:
-            await mongo.save_to_mongo('riot_match_modv1', dump)
+            await mongo.save_to_mongo('riot_match_modv2', dump)
             dump = []
+
+    await mongo.save_to_mongo('riot_match_modv2', dump)
+        
 
 
 

@@ -46,16 +46,16 @@ class MongoDBController:
         return self.db[key]
     
 
-    def get_cate_to_index(self, cate: dict) -> dict:
+    def get_cate_to_index(self, prefix:str, cate: dict) -> dict:
         cate_to_index = {}
         for key in cate.keys():
             if key == 'other':
                 for col in cate[key]:
-                    docs = self.db[f'riot_match_{col}_to_index'].find({}, batch_size=self.batch_size)
+                    docs = self.db[f'{prefix}_{col}_to_index'].find({}, batch_size=self.batch_size)
                     cate_to_index[col] = {d['key']: d['value'] for d in docs}
 
             else:
-                docs = self.db[f'riot_match_{key}_to_index'].find({}, batch_size=self.batch_size)
+                docs = self.db[f'{prefix}_{key}_to_index'].find({}, batch_size=self.batch_size)
                 temp = {d['key']: d['value'] for d in docs}
 
                 for col in cate[key]:
