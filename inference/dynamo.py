@@ -1,40 +1,30 @@
 from enum import Enum
 import boto3
+from typing import List
 from pydantic import BaseModel
 from config import Config, get_config
+
+class Champion(BaseModel):
+    summoner_name: str
+    champion_id: int
+    # total_kills: int
+    # total_deaths: int
+    # total_assists: int
+    # total_played: int
+    # win_count: int
+    # loss_count: int
 
 
 class MostChampions(BaseModel):
     summoner_id: str
-    champions: list["Champion"]
-
-    class Champion(BaseModel):
-        summoner_name: str
-        champion_id: int
-        total_kills: int
-        total_deaths: int
-        total_assists: int
-        total_played: int
-        win_count: int
-        loss_count: int
+    champions: List[Champion]
 
     @classmethod
     def from_dict(cls, d: dict):
+        champions = [Champion(**champion) for champion in d.get("champions", [])]
         return cls(
-            summoner_id=d["summoner_id"],
-            champions=[
-                cls.Champion(
-                    summoner_name=champion["summoner_name"],
-                    champion_id=champion["champion_id"],
-                    total_kills=champion["total_kills"],
-                    total_deaths=champion["total_deaths"],
-                    total_assists=champion["total_assists"],
-                    total_played=champion["total_played"],
-                    win_count=champion["win_count"],
-                    loss_count=champion["loss_count"],
-                )
-                for champion in d["champions"]
-            ],
+            summoner_id=d.get("summoner_id"),
+            champions=champions,
         )
 
 
@@ -77,7 +67,8 @@ class DynamoClient:
         if "Item" not in response:
             return None
 
-        return MostChampions.from_dict(self.parse_item(response["Item"]))
+        most_champions = MostChampions.from_dict(self.parse_item(response["Item"]))
+        return [champion.champion_id for champion in most_champions.champions]
 
 
 dynamo_client = DynamoClient(get_config())

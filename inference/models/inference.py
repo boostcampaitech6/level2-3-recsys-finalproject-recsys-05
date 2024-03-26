@@ -37,13 +37,15 @@ def inference(anchor_most3_champions, candidate_most3_champions):
     print(f'final_score : {final_score}')
     return dict(final_score)
 
+# most 개수에 따라 평균을 구함
 def get_intersection_score(anchor_synergy_set, most3_champions):
     score = 0
+    n_most3_champions = len(most3_champions)
     for chapion_idx in most3_champions:
         if anchor_synergy_set.get(chapion_idx) is not None:
             score += anchor_synergy_set[chapion_idx]
 
-    return score
+    return score / n_most3_champions
 
 
 def sigmoid(x):

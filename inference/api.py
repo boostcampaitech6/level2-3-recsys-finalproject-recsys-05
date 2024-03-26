@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
-from inference.dynamo import DynamoClient, get_dynamo_client
+from dynamo import DynamoClient, get_dynamo_client
 from models.inference import inference
 from schemas import PredictionRequest, PredictionResponse
 
@@ -10,23 +10,23 @@ import datetime
 
 router = APIRouter()
 
-# MongoDB
+# # MongoDB
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['lol_db']
-collection = db['most_champion']
+# client = MongoClient('mongodb://localhost:27017/')
+# db = client['lol_db']
+# collection = db['most_champion']
 
-async def get_most3_champions(
-        summoner_id: str,
-        ):
-    result = collection.find({"summoner_id": summoner_id})
-    # print(f'result : {result}')
-    most3_champions = []
+# async def get_most3_champions(
+#         summoner_id: str,
+#         ):
+#     result = collection.find({"summoner_id": summoner_id})
+#     # print(f'result : {result}')
+#     most3_champions = []
 
-    for user in result:
-        most3_champions = user['champion_id']
+#     for user in result:
+#         most3_champions = user['champion_id']
 
-    return most3_champions
+#     return most3_champions
 
 
 # BigQuery
@@ -56,31 +56,30 @@ async def get_most3_champions(
 @router.get("/duo-recommendation/{summoner_id}")
 async def duo_recommendation(
     request: PredictionRequest,
-    summoner_id: str,
+    # summoner_id: str,
     dynamo_client: DynamoClient = Depends(get_dynamo_client)
 ) -> PredictionResponse:
-    # model predict
     anchor_summonor_id = request.anchor_summonor_id
     candidate_summonor_ids = request.candidate_summonor_ids
 
+    # test
+    # anchor_summonor_id = summoner_id
+    # candidate_summonor_ids = ['_lCBhSm5fSZq1tw5fFaWab6jM-CtpsmqW_wtVJC-q_HWZQY','J9pdaFe4hpLpRhZ9GhpzwXFvHnHC0NcjQQVJzRy2BjR4WWE']
+
     candidate2idx = {candidate_summonor_id: idx for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
     idx2candidate = {idx: candidate_summonor_id for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
+
     # indexing candidatie_summonor_ids
     anchor_most3_champions = dynamo_client.get_most3_champions(anchor_summonor_id)
-
-    if not anchor_most3_champions:
+    if anchor_most3_champions is None:
         return PredictionResponse(summonor_ids_score={}, created_at=str(datetime.datetime.now()))
-    
-    anchor_most3_champion_ids = [champion['champion_id'] for champion in anchor_most3_champions.champions]
 
-    # 비동기로 처리
-    tasks = [get_most3_champions(candidate_summonor_id) for candidate_summonor_id in candidate_summonor_ids]
-    result = await asyncio.gather(*tasks)
-
-    candidate_most3_champions = {candidate2idx[candidate_summonor_id]: champion for candidate_summonor_id, champion in zip(candidate_summonor_ids, result)}
+    candidate_most3_champions = {}
+    for candidate_summonor_id in candidate_summonor_ids:
+        candidate_most3_champions[candidate2idx[candidate_summonor_id]] = dynamo_client.get_most3_champions(candidate_summonor_id)
 
     # prediction : dict of {idx: score}
-    inference_result = inference(anchor_most3_champion_ids, candidate_most3_champions)
+    inference_result = inference(anchor_most3_champions, candidate_most3_champions)
 
     # index to candidate_summonor_id with score
     final_prediction = {idx2candidate[idx]: score for idx, score in inference_result.items()}
