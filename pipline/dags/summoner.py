@@ -26,20 +26,31 @@ default_args = {
 }
 
 async def fetch_puuid(session, headers, riot_api_key, summonerId):
-    try:
-        url = f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/{summonerId}?api_key={riot_api_key}"
-        async with session.get(url, headers=headers) as response:
-            if response.status == 200:
-                content = await response.json()
-                puuid = content["puuid"]
-                return puuid
-            elif response.status == 404:
-                print("Not Found")
-            else:
-                response.raise_for_status()
-    except Exception as e:
-        print(f"error: {e}")
-        await asyncio.sleep(random.uniform(4, 5))
+    retry = 0
+    max_retries = 10  # 최대 재시도 횟수 설정
+    url = f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/{summonerId}?api_key={riot_api_key}"
+    while retry < max_retries:
+        try:
+            async with session.get(url, headers=headers) as response:
+                retry_after = response.headers.get("Retry-After")
+                if response.status == 200:
+                    content = await response.json()
+                    puuid = content["puuid"]
+                    return puuid
+                elif response.status == 429:
+                    retry += 1
+                    print(f"429 Error occurred in {summonerId}, retrying {retry_after} (retry {retry}/{max_retries})")
+                    await asyncio.sleep(int(retry_after)+1)
+                else:
+                    print(f"status {response.status} Error {response.status} occurred in {summonerId}")
+                    await asyncio.sleep(10)
+                    break
+        except Exception as e:
+            print(f"Error occurred in {str(e), summonerId}")
+            retry += 1 
+            await asyncio.sleep(10)
+            if retry == max_retries:
+                print(f"Maximum retries ({max_retries}) reached for match {summonerId}. Skipping...")
 
 async def get_puuid(session, headers, riot_api_key, summonerId_list):
     puuid_list = []
@@ -55,10 +66,8 @@ async def get_puuid(session, headers, riot_api_key, summonerId_list):
         elif isinstance(result, Exception):
             print(f"error: {result}")
             await asyncio.sleep(random.uniform(4, 5))
-
     return puuid_list
-# 500 requests every 10 seconds
-# 30,000 requests every 10 minutes
+
 async def get_summoner(session, credentials):
     headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"}
     tier = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND"]
@@ -80,12 +89,14 @@ async def get_summoner(session, credentials):
     project_id = credential.project_id
     dataset_id = "summoner_dataset"
     table_id = "summoner"
-
-    while True:
-        url = f"https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/{tier[tier_num]}/{division[division_num]}?page={page_num}&api_key={riot_api_key}"
-        async with session.get(url, headers=headers) as response:
-            if response.status == 200:
-                try:
+    retry = 0
+    max_retries = 10  # 최대 재시도 횟수 설정
+    url = f"https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/{tier[tier_num]}/{division[division_num]}?page={page_num}&api_key={riot_api_key}"
+    while retry < max_retries:
+        try:
+            async with session.get(url, headers=headers) as response:
+                retry_after = response.headers.get("Retry-After")
+                if response.status == 200:
                     content = await response.json()
                     print(f"tier: {tier[tier_num]}, division: {division[division_num]}, page_num: {page_num}, length: {len(content)}")
                     if len(content) == 0:
@@ -122,20 +133,33 @@ async def get_summoner(session, credentials):
                         page_num += 1
                         df_new = pd.DataFrame(data)
                         df = pd.concat([df, df_new], ignore_index=True)
-                        
                         if len(df) >= 10000:
                             gbq.to_gbq(df, destination_table=f"{dataset_id}.{table_id}", credentials=credentials, project_id=project_id, if_exists="append")
                             print(f"To gbq, tier: {tier[tier_num]}, division: {division[division_num]}, page_num: {page_num-1}, length: {len(content)}")
                             df = pd.DataFrame()
-                        
-                except Exception as e:
-                    print(f"error: {e}, {url}")
-                    await asyncio.sleep(random.uniform(4, 5))
-            elif response.status == 404:
-                print("Not Found")
-                return
-            else:
-                response.raise_for_status()
+                elif response.status == 429:
+                    retry += 1
+                    print(f"429 Error occurred in {url}, retrying {retry_after} (retry {retry}/{max_retries})")
+                    await asyncio.sleep(int(retry_after)+1)
+                elif response.status == 503:
+                    print(f"503 Error occurred in {url}, retrying {retry_after} (retry {retry}/{max_retries})")
+                    retry += 1
+                    await asyncio.sleep(5)
+                else:
+                    print(f"Error {response.status} occurred in {url}")
+                    await asyncio.sleep(5)
+                    return None        
+        except aiohttp.ClientError as e:
+            print(f"Network error occurred: {e}, {url}")
+            retry += 1
+            await asyncio.sleep(5)
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}, {url}")
+            retry += 1
+            await asyncio.sleep(5)
+            if retry == max_retries: 
+                print(f"Maximum retries ({max_retries}) reached for match {url}. Skipping...")
+    return None
 
 async def main(credentials):
     async with aiohttp.ClientSession() as session:
@@ -151,7 +175,7 @@ def run_task():
 
 dag = DAG(
     dag_id='summoner_info',
-    description="get summoner info data",
+    description="get summoner data info",
     default_args=default_args,
     schedule="0 0 */14 * 4",  # 2주 목요일에 실행
     catchup=True,
