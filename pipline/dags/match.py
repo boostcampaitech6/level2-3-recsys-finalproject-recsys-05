@@ -24,11 +24,8 @@ default_args = {
     'retry_delay': timedelta(days=14),
 }
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
-
 logger = logging.getLogger(__name__)
-#로그의 레벨
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -36,7 +33,6 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 
-# log를 파일에 출력
 file_handler = logging.FileHandler(f"/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/logs/match/{datetime.now()}.log")
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
