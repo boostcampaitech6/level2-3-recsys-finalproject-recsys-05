@@ -5,12 +5,11 @@ from schemas import PredictionRequest, PredictionResponse
 
 from pymongo import MongoClient
 import asyncio
-from config import get_config, Config
 import datetime
 
 router = APIRouter()
 
-# 캐싱 고려하기.. post 활용 생각해보기
+# MongoDB
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['lol_db']
@@ -18,11 +17,9 @@ collection = db['most_champion']
 
 async def get_most3_champions(
         summoner_id: str,
-        config: Config = Depends(get_config)
         ):
-    # int로 임시로 바꿔놓음
     result = collection.find({"summoner_id": summoner_id})
-    print(f'result : {result}')
+    # print(f'result : {result}')
     most3_champions = []
 
     for user in result:
@@ -30,29 +27,50 @@ async def get_most3_champions(
 
     return most3_champions
 
+
+# BigQuery
+
+# from google.cloud import bigquery
+
+# credentials = service_account.Credentials.from_service_account_file(
+#     "your_service_account_file.json"
+# )
+
+# client = bigquery.Client(credentials=credentials, project=credentials.project_id)
+# async def get_most3_champions(
+#         summoner_id: str,
+#         ):
+#     query = f"""
+#     SELECT champion_id
+#     FROM lol_db.most_champion
+#     WHERE summoner_id = {summoner_id}
+#     """
+#     result = await client.query(query)
+#     most3_champions = []
+#     for row in result:
+#         most3_champions.append(row['champion_id'])
+
+#     return most3_champions
+
 @router.get("/duo-recommendation/{summoner_id}")
 async def duo_recommendation(
-    # request: PredictionRequest,
+    request: PredictionRequest,
     summoner_id: str
 ) -> PredictionResponse:
     # model predict
-    # anchor_summonor_id = request.anchor_summonor_id
-    # candidate_summonor_ids = request.candidate_summonor_ids
-    anchor_summonor_id = summoner_id
-    candidate_summonor_ids = ["0002", "0003", "0004", "0005"]
+    anchor_summonor_id = request.anchor_summonor_id
+    candidate_summonor_ids = request.candidate_summonor_ids
 
     candidate2idx = {candidate_summonor_id: idx for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
     idx2candidate = {idx: candidate_summonor_id for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
     # indexing candidatie_summonor_ids
     anchor_most3_champions = await get_most3_champions(anchor_summonor_id)
-    # print(f'anchor_most3_champions : {anchor_most3_champions}')
 
     # 비동기로 처리
     tasks = [get_most3_champions(candidate_summonor_id) for candidate_summonor_id in candidate_summonor_ids]
     result = await asyncio.gather(*tasks)
 
     candidate_most3_champions = {candidate2idx[candidate_summonor_id]: champion for candidate_summonor_id, champion in zip(candidate_summonor_ids, result)}
-    # print(f'candidate_most3_champions : {candidate_most3_champions}')
 
     # prediction : dict of {idx: score}
     inference_result = inference(anchor_most3_champions, candidate_most3_champions)

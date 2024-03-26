@@ -56,7 +56,8 @@ def calculate_score(comb_winrate, self_winrate, play_count, mu, sigma, alpha=1, 
 
     score = comb_winrate * weight + self_winrate * (1 - weight)
 
-    if play_count < mu:
+    # 하위 15%의 챔피언은 점수를 penalty
+    if play_count < mu - sigma:
         score *= penalty
 
     return score

@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from loguru import logger
 
-from config import get_config, Config
 from api import router
 
 @asynccontextmanager
