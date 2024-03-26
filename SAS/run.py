@@ -17,14 +17,12 @@ def main(cfg: CFG):
     if dist.get_rank() == 0:
         wandb.init(project=cfg['wandb_project_name'])
 
-    tier = 'diamond'
-    match_df = pd.read_csv(os.path.join(cfg['data_dir'], f'{tier}_match_by_match_mod.csv'), compression='gzip')
-    summoner_df = pd.read_csv(os.path.join(cfg['data_dir'], f'{tier}_match_by_summoner_mod.csv'), compression='gzip')
+    df = pd.read_csv(os.path.join(cfg['data_dir'], f'riot_match.csv.gzip'), compression='gzip')
     logger.info("## csv data loaded")
 
-    cfg['n_layers'] = match_df[cfg['cate_cols']].max().max() + 1
+    cfg['n_layers'] = df[cfg['cate_cols']].max().max() + 1
 
-    dataset = SASDataset(cfg, summoner_df, match_df)
+    dataset = SASDataset(cfg, df)
     logger.info("## dataset loaded ")
 
     train_loader, valid_loader = get_dataloader(cfg, dataset)
