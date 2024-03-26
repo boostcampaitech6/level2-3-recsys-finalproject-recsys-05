@@ -255,8 +255,10 @@ async def get_match_ids(session, headers, riot_api_key, puuid, start_date, end_d
 
 async def get_match_id(session, headers, credential, credentials, riot_api_key, puuid_list):
     match_df = pd.DataFrame()
-    start_date = int(datetime.timestamp(datetime(2024, 1, 10, 7, 00)))
-    end_date = int(datetime.timestamp(datetime.now()))
+    now = datetime.now()
+    two_weeks_before = now - timedelta(weeks=2)
+    start_date = int(datetime.timestamp(two_weeks_before))
+    end_date = int(datetime.timestamp(now))
     match_count = 100
     project_id = credential.project_id
     dataset_id = "match_dataset"
