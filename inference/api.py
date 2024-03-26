@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from inference.dynamo import DynamoClient, get_dynamo_client
 from models.inference import inference
 from schemas import PredictionRequest, PredictionResponse
 
@@ -55,7 +56,8 @@ async def get_most3_champions(
 @router.get("/duo-recommendation/{summoner_id}")
 async def duo_recommendation(
     request: PredictionRequest,
-    summoner_id: str
+    summoner_id: str,
+    dynamo_client: DynamoClient = Depends(get_dynamo_client)
 ) -> PredictionResponse:
     # model predict
     anchor_summonor_id = request.anchor_summonor_id
@@ -64,7 +66,12 @@ async def duo_recommendation(
     candidate2idx = {candidate_summonor_id: idx for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
     idx2candidate = {idx: candidate_summonor_id for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
     # indexing candidatie_summonor_ids
-    anchor_most3_champions = await get_most3_champions(anchor_summonor_id)
+    anchor_most3_champions = dynamo_client.get_most3_champions(anchor_summonor_id)
+
+    if not anchor_most3_champions:
+        return PredictionResponse(summonor_ids_score={}, created_at=str(datetime.datetime.now()))
+    
+    anchor_most3_champion_ids = [champion['champion_id'] for champion in anchor_most3_champions.champions]
 
     # 비동기로 처리
     tasks = [get_most3_champions(candidate_summonor_id) for candidate_summonor_id in candidate_summonor_ids]
@@ -73,7 +80,7 @@ async def duo_recommendation(
     candidate_most3_champions = {candidate2idx[candidate_summonor_id]: champion for candidate_summonor_id, champion in zip(candidate_summonor_ids, result)}
 
     # prediction : dict of {idx: score}
-    inference_result = inference(anchor_most3_champions, candidate_most3_champions)
+    inference_result = inference(anchor_most3_champion_ids, candidate_most3_champions)
 
     # index to candidate_summonor_id with score
     final_prediction = {idx2candidate[idx]: score for idx, score in inference_result.items()}
