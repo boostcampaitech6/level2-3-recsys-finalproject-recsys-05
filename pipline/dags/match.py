@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python import PythonOperator
@@ -10,15 +11,18 @@ from google.oauth2 import service_account
 from google.cloud import bigquery
 import logging
 import pandas as pd
-import numpy as np
-import time
 import sys, os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from gbq_oauth.auth_bigquery import authorize_bigquery
 
-from datetime import datetime
+default_args = {
+    'owner': 'airflow',
+    'retries': 1,
+    'start_date': datetime(2024, 3, 25),
+    'retry_delay': timedelta(days=14),
+}
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -199,6 +203,10 @@ async def get_match_info(session, headers, match_id, riot_api_key):
                     retry += 1
                     logger.info(f"429 Error occurred in {match_id}, retrying {retry_after} (retry {retry}/{max_retries})")
                     await asyncio.sleep(int(retry_after)+1)
+                elif response.status == 503:
+                    logger.info(f"503 Error occurred in {match_id}, retrying {retry_after} (retry {retry}/{max_retries})")
+                    retry += 1
+                    await asyncio.sleep(5)
                 else:
                     logger.info(f"Error {response.status} occurred in {match_id}")
                     await asyncio.sleep(5)
@@ -211,13 +219,13 @@ async def get_match_info(session, headers, match_id, riot_api_key):
             logger.error(f"Unexpected error occurred: {e}, {match_id}")
             retry += 1
             await asyncio.sleep(5)
-            if retry == max_retries:
+            if retry == max_retries: 
                 logger.info(f"Maximum retries ({max_retries}) reached for match {match_id}. Skipping...")
     return None
             
 async def get_match_ids(session, headers, riot_api_key, puuid, start_date, end_date, match_count):
     retry = 0
-    max_retries = 10  # 최대 재시도 횟수 설정 KR_6938450859
+    max_retries = 10  # 최대 재시도 횟수 설정
     url = f"https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?startTime={start_date}&endTime={end_date}&type=ranked&start=0&count={match_count}&api_key={riot_api_key}"
     while retry < max_retries:
         try:
@@ -252,7 +260,7 @@ async def get_match_id(session, headers, credential, credentials, riot_api_key, 
     match_count = 100
     project_id = credential.project_id
     dataset_id = "match_dataset"
-    table_id = "match_test2"
+    table_id = "match_test_test"
 
     match_id_list = [get_match_ids(session, headers, riot_api_key, puuid, start_date, end_date, match_count) for puuid in puuid_list]
     
@@ -267,23 +275,6 @@ async def get_match_id(session, headers, credential, credentials, riot_api_key, 
     logger.info("Finished get_match_info")
     
     new_match_df_list = await asyncio.gather(*match_id_list)
-    '''
-    chunk_size = 10000  # 청크 크기를 10,000으로 설정합니다.
-    for chunk in [new_match_df[i:i+chunk_size] for i in range(0, len(new_match_df), chunk_size)]:
-        match_df = pd.concat([df for df in chunk if df is not None], ignore_index=True)
-        if len(match_df) > 30000:
-            logger.info(f"match_df length: {len(match_df)}")
-            for column in match_df.columns:
-                if match_df[column].dtype == 'object':
-                    match_df[column] = match_df[column].astype(str)     
-                if match_df[column].dtype == 'float64':
-                    match_df[column] = match_df[column].astype(int)
-            print(match_df.info())
-            gbq.to_gbq(match_df, destination_table=f"{dataset_id}.{table_id}", credentials=credentials, project_id=project_id, if_exists="append")
-            logger.info("Data appended to BigQuery table.")
-    logger.info("Finished concat DataFrame")
-    logger.info("Done")
-    '''
     
     for df in new_match_df_list:
         if df is not None and not df.empty:            
@@ -316,7 +307,7 @@ async def get_match_id(session, headers, credential, credentials, riot_api_key, 
 def get_puuid(client):
     query = '''
         SELECT DISTINCT puuid FROM 
-        `teemo-415918.summoner_dataset.summoner` WHERE tier = "DIAMOND" AND rank = "IV" LIMIT 1000
+        `teemo-415918.summoner_dataset.summoner` WHERE tier = "DIAMOND" AND rank = "III" LIMIT 5
         '''
 
     job = client.query(query)
@@ -324,28 +315,41 @@ def get_puuid(client):
     puuid_list = job_df["puuid"].to_list()
     return puuid_list
 
-async def main():
-    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f"Started at: {start_time}")
-    async with aiohttp.ClientSession() as session:
-        credentials = authorize_bigquery()
+async def main(credentials):
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=6000)) as session:
         key_file_path = "/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/teemo-415918-414755ce7c80.json"
         credential = service_account.Credentials.from_service_account_file(key_file_path)
         client = bigquery.Client(credentials=credentials, project=credential.project_id)
-
         with open("/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/riot_api.json") as f:
             riot_key = json.load(f)
         riot_api_key = riot_key["key"]
-
         headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"}
-        start = time.time()
         puuid_list = get_puuid(client)
         logger.info(f"puuid count: {len(puuid_list)}")
         await get_match_id(session, headers, credential, credentials, riot_api_key, puuid_list)
+   
+def run_task():
+    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f"Started at: {start_time}")
+    credentials = authorize_bigquery()
+    asyncio.run(main(credentials))
+    end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_time = end_time - start_time
+    logger.info(f"전체 실행시간: {total_time}")
+    logger.info(f"Completed at: {end_time}")
 
-        end = time.time()
-        logger.info(f"전체 실행시간: {end - start}")
-        end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"Completed at: {end_time}")
+dag = DAG(
+    dag_id='match_info',
+    description="get match data info",
+    default_args=default_args,
+    schedule="0 0 */14 * 4",  # 2주 목요일에 실행
+    catchup=True,
+)
 
-asyncio.run(main())
+get_match_info_task = PythonOperator(
+    task_id="get_match_info",
+    python_callable=run_task,
+    dag=dag,
+)
+
+get_match_info_task
