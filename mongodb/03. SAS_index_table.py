@@ -30,18 +30,18 @@ async def main(args):
             for col in cate_cols[cate]:
                 print(f"Processing {col}...")
 
-                unique = mongo.get_unique_values('riot_match_modv1', col, batch_size)
+                unique = mongo.get_unique_values('SAS_data_v2', col, batch_size)
 
-                await mongo.make_index_table(unique, f'riot_match_modv1_{col}_to_index', batch_size)
+                await mongo.make_index_table(unique, f'SAS_data_v2_{col}_to_index', batch_size)
 
         else:
             unique = set()
             for col in cate_cols[cate]:
                 print(f"Processing {col}...")
 
-                unique = unique.union(mongo.get_unique_values('riot_match_modv1', col, batch_size))
+                unique = unique.union(mongo.get_unique_values('SAS_data_v2', col, batch_size))
 
-            await mongo.make_index_table(unique, f'riot_match_modv1_{cate}_to_index', batch_size)
+            await mongo.make_index_table(unique, f'SAS_data_v2_{cate}_to_index', batch_size)
 
 
 

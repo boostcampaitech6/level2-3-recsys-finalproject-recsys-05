@@ -62,3 +62,16 @@ class MongoDBController:
                     cate_to_index[col] = temp
 
         return cate_to_index
+    
+
+    def get_cate_to_index_len(self, prefix:str, cate: dict) -> dict:
+        cate_len= {}
+        for key in cate.keys():
+            if key == 'other':
+                for col in cate[key]:
+                    cate_len[col] = self.db[f'{prefix}_{col}_to_index'].count_documents({})
+
+            else:
+                cate_len[key] = self.db[f'{prefix}_{key}_to_index'].count_documents({})
+
+        return cate_len
