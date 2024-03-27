@@ -1,6 +1,6 @@
 ## Legue of Legends summoner, match data ETL pipeline 
 ### Pipeline Flow
-![Alt text](image.png)
+![Alt text](./img/ETL_flow.png)
 
 ### Venv setting
 - python==3.8.10
@@ -44,7 +44,7 @@ kill $(lsof -t -i:8080)
 ### Airflow Scheduler run
 ``` bash
 source .venv/bin/activate
-export AIRFLOW_HOME=`pwd`\
+export AIRFLOW_HOME=`pwd`
 airflow scheduler
 ```
 - If airflow connection error occurs
