@@ -305,7 +305,7 @@ async def get_match_id(session, headers, credential, credentials, riot_api_key, 
 def get_puuid(client):
     query = '''
         SELECT DISTINCT puuid FROM 
-        `teemo-415918.summoner_dataset.summoner` WHERE tier = "DIAMOND" AND rank = "III" LIMIT 5
+        `teemo-415918.summoner_dataset.summoner`
         '''
 
     job = client.query(query)
