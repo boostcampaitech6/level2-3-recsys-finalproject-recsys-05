@@ -1,0 +1,20 @@
+program: multi_gpu_controler.py
+method: bayes
+project: "sas"
+metric:
+  name: valid_loss_epoch
+  goal: minimize
+parameters:
+  batch_size :
+    values: [64, 128, 256]
+  hidden_size :
+    values: [16, 32, 64, 128, 256]
+  emb_size :
+    values: [16, 32, 64, 128, 256]
+  n_head :
+    values: [2, 4, 8]
+  dropout:
+    values: [0.1, 0.2, 0.3, 0.4, 0.5]
+  lr:
+    values: [0.01, 0.001, 0.0001, 0.00001]
+    
