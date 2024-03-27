@@ -49,5 +49,5 @@ airflow scheduler
 ```
 - If airflow connection error occurs
 ``` bash
-kill $(lsof -t -i:8793
+kill $(lsof -t -i:8793)
 ```
