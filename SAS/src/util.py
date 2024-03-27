@@ -125,18 +125,3 @@ def init_for_distributed(cfg):
 
     # 2. init_process_group
     dist.init_process_group(backend="nccl")
-
-
-def df_shift_index(df, cate_to_index_dict, cate_len):
-    stack = 0
-    for cate in cate_to_index_dict.keys():
-        if cate == 'other':
-            for col in cate_to_index_dict[cate]:
-                df[col] = df[col] + stack
-                stack += cate_len[col]
-        else:
-            for col in cate_to_index_dict[cate]:
-                df[col] = df[col] + stack
-            stack += cate_len[cate]
-    
-    return df, stack

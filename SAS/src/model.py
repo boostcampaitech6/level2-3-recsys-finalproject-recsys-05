@@ -53,17 +53,19 @@ class MultiHeadAttention(nn.Module):
 class SASModel(nn.Module):
     def __init__(self, cfg):
         super(SASModel, self).__init__()
-        
+        ### matchId, summonerId, position은 제외한 categorical feature의 개수
+        cate_used_len = len(cfg['cate_cols']) - 3
+
         # categorical
         self.cate_emb = nn.Embedding(cfg['n_layers'], cfg['emb_size'], padding_idx=0)
         self.cate_proj = nn.Sequential(
-            nn.Linear(cfg['emb_size'] * len(cfg['cate_cols']), cfg['hidden_size']),
+            nn.Linear(cfg['emb_size'] * cate_used_len, cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
             nn.Dropout(p=cfg['dropout'])
         )
 
         # continuous
-        self.cont_norm = nn.BatchNorm1d(cfg['max_seq_len'])
+        self.cont_norm = nn.BatchNorm1d(len(cfg['cont_cols']))
         self.cont_proj = nn.Sequential(
             nn.Linear(len(cfg['cont_cols']), cfg['hidden_size']),
             nn.LayerNorm(cfg['hidden_size']),
@@ -87,7 +89,7 @@ class SASModel(nn.Module):
         cate = self.cate_proj(cate)
         
         cont_size = [i for i in cont.size()]
-        cont = cont.view(*cont_size[:-2], -1)
+        cont = cont.view(-1, cont_size[-1])
         cont = self.cont_norm(cont).view(*cont_size)
         cont = self.cont_proj(cont)
 

@@ -2,9 +2,8 @@
 "seed" : 0
 
 "wandb_project_name": "sas"
-"tier" : "diamond"
-"data_dir": "~/SAS/data/"
-# "data_dir": "~/SAS/shared_data/"
+"data_dir": "~/SAS/data2/"
+"data_file": "SAS_test_data_v1.csv"
 "model_dir" : "./models/"
 "output_dir" : "./outputs/"
 

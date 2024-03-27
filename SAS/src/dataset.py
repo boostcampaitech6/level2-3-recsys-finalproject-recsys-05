@@ -3,14 +3,13 @@ from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-import pymongo
 
 
 class SASDataset(Dataset):
     def __init__(self, cfg, df, output_cate_col=None):
         self.cate_col = cfg['cate_cols']
-        if output_cate_col is not None:
-            self.output_cate_col = [x for x in self.cate_col if x != 'summonerId' and x != 'matchId' and x != 'position_index']
+        if output_cate_col is None:
+            self.output_cate_col = [x for x in self.cate_col if x != 'summonerId' and x != 'matchId' and x != 'position']
         else:
             self.output_cate_col = output_cate_col
         
@@ -33,9 +32,10 @@ class SASDataset(Dataset):
         temp = df.groupby('summonerId').size()
         compressed_index_table_by_summoner= []
         start = 0
-        for end, bool in zip(temp.values, temp >= 2):
+        for end, bool in zip(temp.values, temp >= 10):
             if bool:
-                compressed_index_table_by_summoner.append((start, start+end))
+                ### 처음 10개 경기만 사용하기 위해 start + 10
+                compressed_index_table_by_summoner.append((start, start + 10))
             start += end
 
         compressed_index_table_by_summoner = np.array(compressed_index_table_by_summoner)
@@ -62,16 +62,14 @@ class SASDataset(Dataset):
         summoner_start, summoner_end = self.compressed_index_table_by_summoner[idx]
         summoner_df = self.df_by_summoner.iloc[summoner_start: summoner_end]
 
-        # print(summoner_df.head())
-
         match_ids = summoner_df['matchId'].values - 1
         posision = summoner_df['position'].values
 
         cate, cont = [], []
         for i in match_ids:
-            ### 각 경기의 참여자는 항상 10명
+            ### 각 매치 match_id는 총 10개의 행을 가지므로 인덱스를 유추하기 위해 i * 10
             i = i * 10
-            # print(self.df_by_match.iloc[i: i+10][['summonerId', 'matchId', 'position']])
+            ### 각 경기의 참여자는 항상 10명 임으로 i+10
             cate.append(self.df_by_match[i: i+10][self.output_cate_col].values)
             cont.append(self.df_by_match[i: i+10][self.cont_col].values)
 
