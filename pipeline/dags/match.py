@@ -315,7 +315,7 @@ def get_puuid(client):
 
 async def main(credentials):
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=6000)) as session:
-        key_file_path = "../pipeline/keys/teemo-415918-414755ce7c80.json"
+        key_file_path = "../pipeline/keys/teemo.json"
         credential = service_account.Credentials.from_service_account_file(key_file_path)
         client = bigquery.Client(credentials=credentials, project=credential.project_id)
         with open("../pipeline/keys/riot_api.json") as f:

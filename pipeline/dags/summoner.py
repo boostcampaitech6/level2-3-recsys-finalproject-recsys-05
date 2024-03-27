@@ -82,7 +82,7 @@ async def get_summoner(session, credentials):
 
     df = pd.DataFrame()
     
-    key_file_path = "../pipeline/keys/teemo-415918-414755ce7c80.json"
+    key_file_path = "../pipeline/keys/teemo.json"
     credential = service_account.Credentials.from_service_account_file(key_file_path)
     bigquery.Client(credentials=credential, project=credential.project_id)
 
