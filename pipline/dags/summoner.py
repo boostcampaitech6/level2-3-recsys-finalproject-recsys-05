@@ -76,13 +76,13 @@ async def get_summoner(session, credentials):
     tier_num = 0
     division_num = 0
 
-    with open("/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/riot_api.json") as f:
+    with open("../pipline/keys/riot_api.json") as f:
         riot_key = json.load(f)
     riot_api_key = riot_key["key"]
 
     df = pd.DataFrame()
     
-    key_file_path = "/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/teemo-415918-414755ce7c80.json"
+    key_file_path = "../pipline/keys/teemo-415918-414755ce7c80.json"
     credential = service_account.Credentials.from_service_account_file(key_file_path)
     bigquery.Client(credentials=credential, project=credential.project_id)
 
@@ -111,13 +111,22 @@ async def get_summoner(session, credentials):
                         else:
                             division_num += 1
                     else:
-                        tier_list = [player['tier'] for player in content]
-                        rank_list = [player['rank'] for player in content]
-                        summonerId_list = [player['summonerId'] for player in content]
-                        summonerName_list = [player['summonerName'] for player in content]
-                        leaguePoints_list = [player['leaguePoints'] for player in content]
-                        wins_list = [player['wins'] for player in content]
-                        losses_list = [player['losses'] for player in content]
+                        tier_list = []
+                        rank_list = []
+                        summonerId_list = []
+                        summonerName_list = []
+                        leaguePoints_list = []
+                        wins_list = []
+                        losses_list = []
+                        
+                        for player in content:
+                            tier_list.append(player['tier'])
+                            rank_list.append(player['rank'])
+                            summonerId_list.append(player['summonerId'])
+                            summonerName_list.append(player['summonerName'])
+                            leaguePoints_list.append(player['leaguePoints'])
+                            wins_list.append(player['wins'])
+                            losses_list.append(player['losses'])
                         puuid_list = await get_puuid(session, headers, riot_api_key, summonerId_list)
 
                         data = {

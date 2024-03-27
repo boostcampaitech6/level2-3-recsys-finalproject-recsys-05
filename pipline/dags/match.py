@@ -33,7 +33,7 @@ stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 
-file_handler = logging.FileHandler(f"/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/logs/match/{datetime.now()}.log")
+file_handler = logging.FileHandler(f"../pipline/logs/match/{datetime.now()}.log")
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
@@ -315,10 +315,10 @@ def get_puuid(client):
 
 async def main(credentials):
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=6000)) as session:
-        key_file_path = "/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/teemo-415918-414755ce7c80.json"
+        key_file_path = "../pipline/keys/teemo-415918-414755ce7c80.json"
         credential = service_account.Credentials.from_service_account_file(key_file_path)
         client = bigquery.Client(credentials=credentials, project=credential.project_id)
-        with open("/home/ksj0061/level2-3-recsys-finalproject-recsys-05/pipline/keys/riot_api.json") as f:
+        with open("../pipline/keys/riot_api.json") as f:
             riot_key = json.load(f)
         riot_api_key = riot_key["key"]
         headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"}
