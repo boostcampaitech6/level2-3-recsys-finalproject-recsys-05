@@ -32,7 +32,7 @@ def connect_and_execute(server, commands, copy=False):
             with SCPClient(ssh.get_transport()) as scp:
                 # 필요한 작업 수행...
                 if copy:
-                    scp.put('../../shared_data', recursive=True, remote_path='~/SAS/shared_data/')
+                    scp.put('../../shared_data', recursive=True, remote_path='~/SAS/')
 
                 stdin, stdout, stderr = ssh.exec_command(commands)
         except paramiko.ssh_exception.NoValidConnectionsError as e:

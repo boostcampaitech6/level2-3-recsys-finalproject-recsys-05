@@ -9,7 +9,7 @@
 
 "max_steps" : 7
 # "n_epochs" : 3
-"n_epochs" : 3
+"n_epochs" : 300
 "num_workers" : 6
 "max_seq_len" : 10
 
