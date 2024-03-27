@@ -98,10 +98,7 @@ def get_loss(model: nn.Module, data_loader: DataLoader, loss_fun: nn.Module, dev
 
     avg_total_loss = evaluate(average_loss, device)
 
-    if is_train:
-        mode = "TRAIN"
-    else:
-        mode = "VALID"
+    mode = "TRAIN" if is_train else "VALID"
     logger.info("%s LOSS : %.4f", mode, avg_total_loss)
 
     return avg_total_loss
