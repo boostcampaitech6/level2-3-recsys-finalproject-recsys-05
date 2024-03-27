@@ -1,0 +1,7 @@
+pandas==2.0.3
+aiohttp==3.8.4
+asyncio==3.4.3
+apache-airflow==2.6.3 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.8.txt"
+pandas-gbq==0.22.0
+google==3.0.0
+google-auth-oauthlib==1.2.0
