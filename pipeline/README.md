@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ### Airflow setting
 ``` bash
 export AIRFLOW_HOME=`pwd`
-eche $AIRFLOW_HOME
+echo $AIRFLOW_HOME
 
 airfloe db init
 
