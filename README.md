@@ -137,7 +137,7 @@ DuoFinder는 리그 오브 레전드 플레이어에게 최적의 듀오를 추�
 
 ## 🖥️ Presentation
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qHoMXQILScI?si=Jj-2Sc7PNygj4Udt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Video Label](http://img.youtube.com/vi/qHoMXQILScI/0.jpg)](https://youtu.be/qHoMXQILScI)
 
 [Presentation PDF](./assets/duo_finder_pdf.pdf)
 
