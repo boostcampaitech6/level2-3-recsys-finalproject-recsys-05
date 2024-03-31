@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+{% block title %}
+  Home
+{% endblock title %}
+{% block content %}
+  <div class="flex justify-center items-center mt-64">
+    <div class="text-center">
+      <h1 class="text-5xl font-bold mb-4">DUO FINDER</h1>
+      <p class="text-stone-400">당신의 동료를 찾아드립니다.</p>
+      <div class="mt-8">
+        <label class="relative block">
+          <span class="sr-only">Search</span>
+          <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+            <svg class="h-5 w-5 fill-slate-300"
+                 viewBox="0 0 20 20"
+                 xmlns="http://www.w3.org/2000/svg"
+                 fill="#FFFFFF"
+                 stroke-width="1.5"
+                 stroke="#6b7280">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </span>
+          <input class="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-stone-500 focus:ring-stone-500 focus:ring-1 sm:text-sm"
+                 placeholder="폴리스오피서#KR1"
+                 type="text"
+                 name="search" />
+        </label>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

@@ -1,0 +1,16 @@
+{% extends "base/base.html" %}
+{% block title %}
+  | Search
+{% endblock title %}
+{% block content %}
+  <div class="flex justify-center items-center mt-64">
+    {% if summoner %}
+      <div class="text-center">{{ summoner }}</div>
+    {% elif error %}
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-red-500">{{ error }}</h1>
+        <a href="{{ url('summoner') }}" class="text-blue-500">Try again</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}

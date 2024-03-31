@@ -1,0 +1,5 @@
+[default]
+entity = teemo-dkt
+project = sas
+base_url = https://api.wandb.ai
+

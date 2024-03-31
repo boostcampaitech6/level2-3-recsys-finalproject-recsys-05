@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+{% block title %}
+  | AI Recommend
+{% endblock title %}
+{% block content %}
+  <div class="flex justify-center items-center mt-64 flex-col">
+    <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+
+    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">추천 결과</h5>
+    <p class="font-normal text-gray-700 dark:text-gray-400">
+      {{ user.summoner.name }}님의 추천 결과입니다.
+      <div class="flex justify-center items-center mt-64 flex-col">
+      </div>
+    </p>
+    </a>
+  </div>
+{% endblock content %}
+{% block js %}
+  <script>
+    document.getElementById('start').addEventListener('click', () => {
+      document.getElementById('start').classList.add('hidden');
+      document.getElementById('loading').classList.remove('hidden');
+      setTimeout(() => {
+        alert('AI 추천이 완료되었습니다.')
+        document.getElementById('start').classList.remove('hidden');
+        document.getElementById('loading').classList.add('hidden');
+      }, 1000);
+    });
+  </script>
+{% endblock js %}
