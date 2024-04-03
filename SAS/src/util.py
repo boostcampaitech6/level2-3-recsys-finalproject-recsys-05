@@ -91,6 +91,7 @@ def parse_args():
     parser.add_argument("--n_epochs", type=int, help="")
     parser.add_argument("--lr", type=float, help="")
     parser.add_argument("--dropout", type=float, help="")
+    parser.add_argument("--seq_len", type=int, help="")
 
     parser.add_argument("--verbose", type=bool, help="")
     

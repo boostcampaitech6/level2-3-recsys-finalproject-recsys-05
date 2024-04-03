@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from fastapi import Depends
 from dynamo import DynamoClient, get_dynamo_client
-from models.inference import inference
+from models.CF.inference import inference as CF_inference
+from models.SAS.inference import inference as SAS_inference
 from schemas import PredictionRequest, PredictionResponse
 
 from pymongo import MongoClient
@@ -53,6 +54,39 @@ router = APIRouter()
 
 #     return most3_champions
 
+
+def CF(dynamo_client, anchor_summonor_id, candidate_summonor_ids):
+    candidate2idx = {candidate_summonor_id: idx for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
+    idx2candidate = {idx: candidate_summonor_id for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
+
+    # indexing candidatie_summonor_ids
+    anchor_most3_champions = dynamo_client.get_most3_champions(anchor_summonor_id)
+
+    candidate_most3_champions = {}
+    for candidate_summonor_id in candidate_summonor_ids:
+        candidate_most3_champions[candidate2idx[candidate_summonor_id]] = dynamo_client.get_most3_champions(candidate_summonor_id)
+
+    # prediction : dict of {idx: score}
+    inference_result = CF_inference(anchor_most3_champions, candidate_most3_champions)
+
+    # index to candidate_summonor_id with score
+    final_prediction = {idx2candidate[idx]: score for idx, score in inference_result.items()}
+
+    return final_prediction
+
+
+def SAS(dynamo_client, anchor_summonor_id, candidate_summonor_ids):
+    matches = []
+    ### anchor가 선호하는 유저의 벡터를 가져와야하지만 추후에 추가
+    matches.append(dynamo_client.get_match(anchor_summonor_id))
+    for candidate_summonor_id in candidate_summonor_ids:
+        matches.append(dynamo_client.get_match(candidate_summonor_id))
+
+    inference_result = SAS_inference(matches)
+
+    return inference_result    
+
+
 @router.get("/duo-recommendation/{summoner_id}")
 async def duo_recommendation(
     request: PredictionRequest,
@@ -62,27 +96,13 @@ async def duo_recommendation(
     anchor_summonor_id = request.anchor_summonor_id
     candidate_summonor_ids = request.candidate_summonor_ids
 
-    # test
-    # anchor_summonor_id = summoner_id
-    # candidate_summonor_ids = ['_lCBhSm5fSZq1tw5fFaWab6jM-CtpsmqW_wtVJC-q_HWZQY','J9pdaFe4hpLpRhZ9GhpzwXFvHnHC0NcjQQVJzRy2BjR4WWE']
-
-    candidate2idx = {candidate_summonor_id: idx for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
-    idx2candidate = {idx: candidate_summonor_id for idx, candidate_summonor_id in enumerate(candidate_summonor_ids)}
-
-    # indexing candidatie_summonor_ids
     anchor_most3_champions = dynamo_client.get_most3_champions(anchor_summonor_id)
     if anchor_most3_champions is None:
         return PredictionResponse(summonor_ids_score={}, created_at=str(datetime.datetime.now()))
 
-    candidate_most3_champions = {}
-    for candidate_summonor_id in candidate_summonor_ids:
-        candidate_most3_champions[candidate2idx[candidate_summonor_id]] = dynamo_client.get_most3_champions(candidate_summonor_id)
+    cf_prediction = CF(dynamo_client, anchor_summonor_id, candidate_summonor_ids)
 
-    # prediction : dict of {idx: score}
-    inference_result = inference(anchor_most3_champions, candidate_most3_champions)
-
-    # index to candidate_summonor_id with score
-    final_prediction = {idx2candidate[idx]: score for idx, score in inference_result.items()}
+    SAS_prediction = SAS(dynamo_client, anchor_summonor_id, candidate_summonor_ids)
 
     # return prediction
-    return PredictionResponse(summonor_ids_score=final_prediction, created_at=str(datetime.datetime.now()))
+    return PredictionResponse(summonor_ids_score=cf_prediction, created_at=str(datetime.datetime.now()))

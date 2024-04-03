@@ -7,6 +7,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 class SASDataset(Dataset):
     def __init__(self, cfg, df, output_cate_col=None):
+        self.seq_len = cfg['seq_len']
+
         self.cate_col = cfg['cate_cols']
         if output_cate_col is None:
             self.output_cate_col = [x for x in self.cate_col if x != 'summonerId' and x != 'matchId' and x != 'position']
@@ -32,10 +34,10 @@ class SASDataset(Dataset):
         temp = df.groupby('summonerId').size()
         compressed_index_table_by_summoner= []
         start = 0
-        for end, bool in zip(temp.values, temp >= 10):
+        for end, bool in zip(temp.values, temp >= self.seq_len):
             if bool:
                 ### 처음 10개 경기만 사용하기 위해 start + 10
-                compressed_index_table_by_summoner.append((start, start + 10))
+                compressed_index_table_by_summoner.append((start, start + self.seq_len))
             start += end
 
         compressed_index_table_by_summoner = np.array(compressed_index_table_by_summoner)

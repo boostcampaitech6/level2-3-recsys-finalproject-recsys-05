@@ -1,32 +1,13 @@
 "device" : "cuda"
-"seed" : 0
 
-"wandb_project_name": "sas"
-"data_dir": "~/SAS/shared_data/"
-"data_file": "SAS_data_v1.csv"
-"model_dir" : "./trained_models/"
-"output_dir" : "./outputs/"
-
-"max_steps" : 7
-# "n_epochs" : 3
 "n_epochs" : 300
-"num_workers" : 6
-"seq_len" : 2
-
-# "batch_size" : 3
-"batch_size" : 10
-"dropout" : 0.2
-# "hidden_size" : 8
-"hidden_size" : 128
-"emb_size" : 128
-# "n_head" : 2
+"batch_size" : 100
+"dropout" : 0.4
+"hidden_size" : 100
+"emb_size" : 256
 "n_head" : 2
-"train_ratio" : 0.8
-"lr" : 0.01
 
 "cate_cols" :
-- 'summonerId'
-- 'matchId'
 - 'position'
 - 'teamId'
 - 'individualPosition' 

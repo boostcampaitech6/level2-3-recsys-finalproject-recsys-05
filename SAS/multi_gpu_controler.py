@@ -1,5 +1,6 @@
 import argparse
 from doctest import master
+from sre_constants import BRANCH
 import time
 import paramiko
 from scp import SCPClient
@@ -16,11 +17,14 @@ def parse_args():
     parser.add_argument("--emb_size", type=int, default=32)
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--lr", type=float, default=0.001)
+    parser.add_argument("--seq_len", type=int, default=10)
+    
     return parser.parse_args()
 
 # 원격 서버 접속 정보
 workers = ["ngo-server", "lsg-server", "jsj-server"]
 # workers = []
+BRANCH = 'SAS_inference'
 
 
 def connect_and_execute(server, commands, copy=False):
@@ -47,9 +51,9 @@ def start():
         cd SAS;
         source venv/SAS/bin/activate;
         cd level2-3-recsys-finalproject-recsys-05;
-        git checkout SAS;
         git fetch;
-        git reset --hard origin/SAS;
+        git checkout {BRANCH};
+        git reset --hard origin/{BRANCH};
         git pull;
         cd SAS;
         nohup torchrun --nnodes={len(workers) + 1} --nproc_per_node=1 --node_rank={i} --master_addr=10.0.2.7 --master_port=20000 \
@@ -77,7 +81,7 @@ def stop():
 
 
     time.sleep(10)
-    for server in ["bgw-server"] + workers:
+    for worker in ["bgw-server"] + workers:
         commands = f"""
         pkill -9 -u bgw torchrun;
         """
