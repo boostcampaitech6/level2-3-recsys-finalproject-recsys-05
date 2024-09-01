@@ -1,4 +1,4 @@
-## Legue of Legends summoner, match data ETL pipeline 
+## League of Legends summoner, match data ETL pipeline 
 ### Pipeline Flow
 ![Alt text](./img/ETL_flow.png)
 
