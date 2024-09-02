@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Duo Finder">
+  <meta name="author" content="Duo Finder">
+  <meta name="keywords"
+        content="Duo Finder, LOL, League of Legends, Duo, Finder, LOL Duo Finder">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta name="google" content="notranslate">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUO FINDER
+      {% block title %}
+      {% endblock title %}
+    </title>
+    <link rel="stylesheet" href="{{ static }}css/output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="flex flex-col min-h-screen">
+      <header>
+        <nav class="flex items-center justify-between flex-wrap bg-stone-500 p-6">
+          <div class="flex items-center flex-shrink-0 text-white mr-6"
+               onclick="home()">
+            <span class="font-semibold text-xl tracking-tight">DUO FINDER</span>
+          </div>
+          <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-stone-200 border-stone-400 hover:text-white hover:border-white">
+              <svg class="fill-current h-3 w-3"
+                   viewBox="0 0 20 20"
+                   xmlns="http://www.w3.org/2000/svg">
+                <title>Menu</title>
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+              </svg>
+            </button>
+          </div>
+          <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-sm lg:flex-grow">
+              <a href="{{ url('recommend-ai') }}"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">추천 AI</a>
+              <a href="#responsive-header"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white mr-4">내 대시보드</a>
+              <a href="#responsive-header"
+                 class="block mt-4 lg:inline-block lg:mt-0 text-stone-200 hover:text-white">매칭 기록</a>
+            </div>
+            <div>
+              {% if user and user.is_authenticated %}
+                <span class="text-white mr-4 mt-4 lg:mt-0">안녕하세요, {{ user.username }}님!</span>
+                <button onclick="users_profile()"
+                        class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-stone-500 hover:bg-white mt-4 lg:mt-0">
+                  마이페이지
+                </button>
+                <form method="post" action="{{ url('auth:signout') }}" class="inline-block">
+                  {{ csrf_input }}
+                  <button type="submit"
+                          class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-stone-500 hover:bg-white mt-4 lg:mt-0">
+                    로그아웃
+                  </button>
+                </form>
+              {% else %}
+                <a href="{{ url('discord_login') }}?next={{ request.path }}">
+                  <button class="inline-flex items-center justify-center text-sm px-4 py-2 leading-none border rounded transition-colors text-white bg-[#5865F2] border-[#5865F2] hover:bg-white hover:text-[#5865F2] mt-4 lg:mt-0">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 fill-current transition-colors hover:fill-[#5865F2]">
+                      <title>Discord</title>
+                      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+                    </svg>
+                    Discord로 시작하기
+                  </button>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </header>
+      <main class="flex-1">
+        {% block content %}
+        {% endblock content %}
+      </main>
+    </div>
+    <footer>
+      <div class="bg-stone-500">
+        <div class="max-w-2xl mx-auto text-white py-10">
+          <div class="mt-14 flex flex-col md:flex-row md:justify-between items-center text-sm text-stone-400">
+            <p class="order-2 md:order-1 mt-8 md:mt-0">© Duo Finder, 2024.</p>
+            <div class="order-1 md:order-2">
+              <span class="px-2 hover:text-white">
+                <a href="{{ url('terms-of-service') }}">
+                  Terms of Service
+                </a>
+              </span>
+              <span class="px-2 border-l hover:text-white">
+                <a href="{{ url('privacy-policy') }}">
+                  Privacy Policy
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="{{ static }}js/script.js"></script>
+    <script>
+    function users_profile() {
+        location.href = "{{ url('users:profile') }}";
+    }
+
+    function home() {
+        location.href = "{{ url('home') }}";
+    }
+
+    function signout() {
+        location.href = "{{ url('auth:signout') }}";
+    }
+
+    </script>
+    {% block js %}
+    {% endblock js %}
+  </body>
+</html>
