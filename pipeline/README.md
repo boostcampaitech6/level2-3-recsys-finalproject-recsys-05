@@ -17,7 +17,7 @@ pip install -r requirements.txt
 export AIRFLOW_HOME=`pwd`
 echo $AIRFLOW_HOME
 
-airfloe db init
+airflow db init
 
 airflow users create \
 --username your_name \
